@@ -11,7 +11,7 @@ Resources:
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateUrl: ./text-extractor-lambda.yml
+      TemplateURL: ./text-extractor-lambda.yml
       Parameters:
         Application: synth-easy
         Environment: dev
