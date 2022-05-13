@@ -23,7 +23,7 @@ jobs:
         working-directory: text-extractor
 
     env:
-      LAMBDA_NAME: text-extractor
+      COMPONENT_NAME: text-extractor
 
     steps:
     - name: Checkout
@@ -42,12 +42,12 @@ jobs:
 
     - name: Zip artifact
       run: |
-        zip -r ${{ env.LAMBDA_NAME }}-${{ github.sha }}.zip  ./dist/*
+        zip -r ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip  ./dist/*
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.APPLICATION_PACKAGE }}
-        path: ${{ env.SLN_WORKING_DIR }}/${{ env.APPLICATION_PACKAGE }}-${{ github.sha }}.zip
+        name: ${{ env.COMPONENT_NAME }}
+        path: ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip
 
 
