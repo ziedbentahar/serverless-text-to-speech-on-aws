@@ -42,7 +42,7 @@ jobs:
 
     - name: Zip artifact
       run: |
-        zip -jr ${{ env.LAMBDA_NAME }}-${{ github.sha }}.zip  ./dist/*
+        zip -r ${{ env.LAMBDA_NAME }}-${{ github.sha }}.zip  ./dist/*
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
