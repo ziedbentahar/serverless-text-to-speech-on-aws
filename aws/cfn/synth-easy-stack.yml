@@ -4,14 +4,17 @@ Description: synth easy stack
 Parameters:
   DeploymentBucketName:
     Type: String  
+  ContentRepoBucketName:
+    Type: String  
   TextExtractorLambdaZipFile:
     Type: String  
 
 Resources:
-  TextExctractorLambda:
+
+  ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./text-extractor-lambda.yml
+      TemplateURL: ./synth-easy-bucket.yml
       Parameters:
         Application: synth-easy
         Environment: dev
@@ -19,3 +22,11 @@ Resources:
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref TextExtractorLambdaZipFile
+        ContentRepoBucketName: !Ref ContentRepoBucketName
+
+  TextExctractorLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./content-repo-bucket.yml
+      Parameters:
+        BucketName: !Ref ContentRepoBucketName

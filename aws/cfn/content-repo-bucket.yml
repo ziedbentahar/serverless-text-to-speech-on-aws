@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Synth Easy Content Bucket
+
+Parameters:
+  BucketName:
+    Type: String
+
+Resources:
+  ContentBucket:
+    Type: AWS::S3::Bucket
+    Properties: 
+      AccessControl: Private
+      BucketName: !Ref BucketName
+
+Outputs:
+  ContentBucketName:
+    Description: ContentBucketName Arn
+    Value: !GetAtt ContentBucket.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-synth-easy-content-bucket-arn

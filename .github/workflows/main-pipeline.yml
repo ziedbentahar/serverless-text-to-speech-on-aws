@@ -13,6 +13,7 @@ env:
   DEPLOYMENT_BUCKET_NAME: synth-easy-deployment-bucket
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
+  CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
 
 jobs:
   build-text-extractor:
@@ -112,6 +113,7 @@ jobs:
             Environment=dev \
             DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
+            ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
             --capabilities CAPABILITY_IAM
 
         
