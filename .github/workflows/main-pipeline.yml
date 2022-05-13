@@ -115,5 +115,9 @@ jobs:
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
             --capabilities CAPABILITY_IAM
+        if [[$? -ne 0]];
+        then
+          aws cloudformation describe-stack-events --stack-name synth-easy
+        fi
 
         
