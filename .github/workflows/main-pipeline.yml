@@ -106,8 +106,8 @@ jobs:
 
     - name: Package and Deploy
       run: |
-        aws cloudformation package --template-file ./aws/cfn/synth-easy-stack.yml --output synth-easy-stack-packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
-        aws cloudformation deploy --template-file synth-easy-stack-packaged.yml --stack-name synth-easy --parameter-overrides \
+        aws cloudformation package --template-file ./aws/cfn/synth-easy-stack.yml --output-template-file synth-easy-stack.packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
+        aws cloudformation deploy --template-file synth-easy-stack.packaged.yml --stack-name synth-easy --parameter-overrides \
             Application=${{ env.APPLICATION_NAME }} \
             Environment=dev \
             LambdaBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
