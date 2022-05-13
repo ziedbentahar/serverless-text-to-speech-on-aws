@@ -104,15 +104,14 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
-    - name: Package
+    - name: Package and Deploy
       run: |
-        aws cloudfomation package --template-file ./aws/cfn/synth-easy-stack.yml --output synth-easy-stack-packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
-    
-    - name: Deploy
-      run: |
+        aws cloudformation package --template-file ./aws/cfn/synth-easy-stack.yml --output synth-easy-stack-packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
         aws cloudformation deploy --template-file synth-easy-stack-packaged.yml --stack-name synth-easy --parameter-overrides \
             Application=${{ env.APPLICATION_NAME }} \
             Environment=dev \
             LambdaBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             --capabilities CAPABILITY_IAM
+
+        
