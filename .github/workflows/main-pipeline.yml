@@ -43,12 +43,11 @@ jobs:
       run: |
         cd dist
         zip -r ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip  .
-        cd ..
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.COMPONENT_NAME }}
-        path: ${{ env.COMPONENT_NAME }}/${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip
+        path: ${{ env.COMPONENT_NAME }}/dist/${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip
 
 
