@@ -15,38 +15,37 @@ env:
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
 
 jobs:
-
   build-text-extractor:
     runs-on: ubuntu-latest
 
-  defaults:
+    defaults:
       run:
         working-directory: text-extractor
 
-  env:
-    LAMBDA_NAME: text-extractor
+    env:
+      LAMBDA_NAME: text-extractor
 
-  steps:
-  - name: Checkout
-    uses: actions/checkout@v3
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-  - name: Setup Node
-    uses: actions/setup-node@v3.1.1
-    with:
-      node-version: 14
+    - name: Setup Node
+      uses: actions/setup-node@v3.1.1
+      with:
+        node-version: 14
 
-  - name: Restore dependencies
-    run: npm install
+    - name: Restore dependencies
+      run: npm install
 
-  - name: Build
-    run: npm run build
+    - name: Build
+      run: npm run build
 
-  - name: Zip artifact
-    run: |
-      zip -jr ${{ env.LAMBDA_NAME }}-${{ github.sha }}.zip  ./dist/*
+    - name: Zip artifact
+      run: |
+        zip -jr ${{ env.LAMBDA_NAME }}-${{ github.sha }}.zip  ./dist/*
 
-  - name: Upload build artifact
-    uses: actions/upload-artifact@v3
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
       with:
         name: ${{ env.APPLICATION_PACKAGE }}
         path: ${{ env.SLN_WORKING_DIR }}/${{ env.APPLICATION_PACKAGE }}-${{ github.sha }}.zip
