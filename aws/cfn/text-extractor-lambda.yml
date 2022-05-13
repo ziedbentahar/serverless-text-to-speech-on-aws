@@ -47,7 +47,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
      LogGroupName: !Join ['/', ['/aws/lambda', !Ref LambdaFunction]]
-    RetentionInDays: 7 # days
+     RetentionInDays: 7 # days
                 
   LambdaFunction:
     Type: AWS::Lambda::Function
