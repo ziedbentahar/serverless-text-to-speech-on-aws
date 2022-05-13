@@ -12,6 +12,7 @@ env:
   APPLICATION_NAME: synth-easy
   LAMBDA_BUCKET_NAME: synth-easy-lambda-sample-bucket
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
+  TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
 
 jobs:
   build-text-extractor:
@@ -20,9 +21,6 @@ jobs:
     defaults:
       run:
         working-directory: text-extractor
-
-    env:
-      COMPONENT_NAME: text-extractor
 
     steps:
     - name: Checkout
@@ -42,12 +40,61 @@ jobs:
     - name: Zip artifact
       run: |
         cd dist
-        zip -r ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip  .
+        zip -r ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.COMPONENT_NAME }}
-        path: ${{ env.COMPONENT_NAME }}/dist/${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip
+        name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+        path: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
 
+  upload-artifact-to-s3:
+    needs: [build-text-extractor]
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+   
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+
+    - name: Create or update lambda bucket
+      run: |
+        aws cloudformation deploy --template-file ./aws/cfn/lambda-bucket.yml --stack-name lambda-bucket --parameter-overrides LambdaBucketName=${{ env.LAMBDA_BUCKET_NAME}}
+        
+    - name: Upload to S3
+      run: |
+        aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.LAMBDA_BUCKET_NAME}}
+
+
+  deploy:
+    needs: [upload-artifact-to-s3]
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3 
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-1
+
+    - name: Deploy
+      run: |
+        aws cloudformation deploy --template-file ./aws/cfn/synth-easy-stack.yml --stack-name synth-easy --parameter-overrides \
+            Application=${{ env.APPLICATION_NAME }} \
+            Environment=dev \
+            LambdaBucketName=${{ env.LAMBDA_BUCKET_NAME }} \
+            TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
+            --capabilities CAPABILITY_IAM

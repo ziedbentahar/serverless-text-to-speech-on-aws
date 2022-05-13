@@ -1,23 +1,37 @@
 import { Readability } from "@mozilla/readability";
-import { APIGatewayEvent, APIGatewayProxyResult, Context } from "aws-lambda";
+import { Context } from "aws-lambda";
 import { JSDOM } from "jsdom";
+import LanguageDetect from "languagedetect";
 import fetch from "node-fetch";
+
+const languageDetection = new LanguageDetect();
+languageDetection.setLanguageType("iso3");
+
 export const handler = async (
-  event: APIGatewayEvent,
+  event: { articleUrl: string },
   context: Context
-): Promise<APIGatewayProxyResult> => {
-  const s =
-    "https://fr.yahoo.com/news/naufrage-candidate-rn-l%C3%A9gislatives-nest-140520858.html";
-  const response = await fetch(s);
+): Promise<any> => {
+  const { articleUrl } = event;
+  const response = await fetch(event.articleUrl);
   const body = await response.text();
   const doc = new JSDOM(body, {
-    url: s,
+    url: articleUrl,
   });
+
   const article = new Readability(doc.window.document).parse();
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      article,
-    }),
-  };
+
+  if (article) {
+    const languageProbabilities = languageDetection.detect(
+      article!.textContent,
+      1
+    );
+    const lang = languageProbabilities[0][0];
+
+    return {
+      ...article,
+      lang,
+    };
+  }
+
+  throw new Error(`${articleUrl} was not processed`);
 };

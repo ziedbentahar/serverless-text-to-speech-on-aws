@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: synth easy stack
+
+Parameters:
+  LambdaBucketName:
+    Type: String  
+  TextExtractorLambdaZipFile:
+    Type: String  
+
+Resources:
+  TextExctractorLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateUrl: ./text-extractor-lambda.yml
+      Parameters:
+        Application: synth-easy
+        Environment: dev
+        LambdaName: text-extractor
+        LambdaHandler: index.handler
+        LambdaBucketName: !Ref LambdaBucketName
+        LambdaZipFile: !Ref TextExtractorLambdaZipFile
