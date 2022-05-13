@@ -53,9 +53,7 @@ jobs:
       
       steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+      
     
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -75,6 +73,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
