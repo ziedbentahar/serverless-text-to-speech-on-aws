@@ -27,6 +27,6 @@ Resources:
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./content-repo-bucket.yml
+      TemplateURL: ./text-extractor-lambda.yml
       Parameters:
         BucketName: !Ref ContentRepoBucketName
