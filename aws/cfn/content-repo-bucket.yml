@@ -4,6 +4,12 @@ Description: Synth Easy Content Bucket
 Parameters:
   BucketName:
     Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
 
 Resources:
   ContentBucket:

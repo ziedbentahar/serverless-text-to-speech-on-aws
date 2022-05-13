@@ -7,26 +7,33 @@ Parameters:
   ContentRepoBucketName:
     Type: String  
   TextExtractorLambdaZipFile:
-    Type: String  
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
 
 Resources:
 
-  ContentRepoBucket:
+  TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
       TemplateURL: ./text-extractor-lambda.yml
       Parameters:
         Application: synth-easy
-        Environment: dev
+        Environment: !Ref Environment
         LambdaName: text-extractor
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref TextExtractorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
-  TextExctractorLambda:
+  ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
       TemplateURL: ./content-repo-bucket.yml
       Parameters:
         BucketName: !Ref ContentRepoBucketName
+        Environment: !Ref Environment
