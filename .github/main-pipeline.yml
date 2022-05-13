@@ -1,0 +1,54 @@
+name: synth-easy
+
+on:
+  push:
+    branches: [ main ]
+
+      
+  pull_request:
+    branches: [ main ]
+
+env:
+  APPLICATION_PACKAGE: lambdaminimalapisample
+  APPLICATION_NAME: synth-easy
+  LAMBDA_BUCKET_NAME: synth-easy-lambda-sample-bucket
+  DOMAIN_NAME: synth-easy.inflow-it-labs.tk
+
+jobs:
+
+  build-text-extractor:
+    runs-on: ubuntu-latest
+
+  defaults:
+      run:
+        working-directory: text-extractor
+
+  env:
+    LAMBDA_NAME: text-extractor
+
+  steps:
+  - name: Checkout
+    uses: actions/checkout@v3
+
+  - name: Setup Node
+    uses: actions/setup-node@v3.1.1
+    with:
+      node-version: 14
+
+  - name: Restore dependencies
+    run: npm install
+
+  - name: Build
+    run: npm run build
+
+  - name: Zip artifact
+    run: |
+      zip -jr ${{ env.LAMBDA_NAME }}-${{ github.sha }}.zip  ./dist/*
+
+  - name: Upload build artifact
+    uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.APPLICATION_PACKAGE }}
+        path: ${{ env.SLN_WORKING_DIR }}/${{ env.APPLICATION_PACKAGE }}-${{ github.sha }}.zip
+
+

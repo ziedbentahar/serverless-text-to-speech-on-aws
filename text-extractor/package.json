@@ -1,0 +1,25 @@
+{
+  "name": "text-extractor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "cp package*.json dist && cd dist && npm ci --production"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.97",
+    "@types/jsdom": "^16.2.14",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.4.2",
+    "jsdom": "^19.0.0",
+    "languagedetect": "^2.0.0",
+    "node-fetch": "^3.2.4"
+  }
+}
