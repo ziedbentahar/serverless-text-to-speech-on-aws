@@ -41,11 +41,8 @@ jobs:
 
     - name: Zip artifact
       run: |
-        zip -r ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip  ./dist/*
-        ls
-        pwd
-
-      
+        cd dist
+        zip -r ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
