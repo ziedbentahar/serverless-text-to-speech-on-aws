@@ -1,13 +1,13 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Lambda Bucket
+Description: Deployment Bucket
 
 Parameters:
-  LambdaBucketName:
+  DeploymentBucketName:
     Type: String
 
 Resources:
-  LambdaBucket:
+  DeploymentBucket:
     Type: AWS::S3::Bucket
     Properties: 
       AccessControl: Private
-      BucketName: !Ref LambdaBucketName
+      BucketName: !Ref DeploymentBucketName

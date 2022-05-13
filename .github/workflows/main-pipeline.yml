@@ -10,7 +10,7 @@ on:
 
 env:
   APPLICATION_NAME: synth-easy
-  LAMBDA_BUCKET_NAME: synth-easy-lambda-bucket
+  DEPLOYMENT_BUCKET_NAME: synth-easy-deployment-bucket
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
 
@@ -48,17 +48,33 @@ jobs:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
         path: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
+  create-or-update-deployment-bucket:
+      runs-on: ubuntu-latest
+      
+      steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+    
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
 
+      - name: Create or update deployment bucket
+        run: |
+          aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name synth-easy-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
+    
   upload-artifact-to-s3:
-    needs: [build-text-extractor]
+    needs: [build-text-extractor, create-or-update-deployment-bucket]
     
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/download-artifact@v2
-      with:
-        name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -67,13 +83,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
-    - name: Create or update lambda bucket
-      run: |
-        aws cloudformation deploy --template-file ./aws/cfn/lambda-bucket.yml --stack-name synth-easy-lambda-bucket --parameter-overrides LambdaBucketName=${{ env.LAMBDA_BUCKET_NAME}}
-        
     - name: Upload to S3
       run: |
-        aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.LAMBDA_BUCKET_NAME}}
+        aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME}}
 
 
   deploy:
@@ -90,11 +102,15 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-1
 
+    - name: Package
+      run: |
+        aws cloudfomation package --template-file ./aws/cfn/synth-easy-stack.yml --output synth-easy-stack-packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
+    
     - name: Deploy
       run: |
-        aws cloudformation deploy --template-file ./aws/cfn/synth-easy-stack.yml --stack-name synth-easy --parameter-overrides \
+        aws cloudformation deploy --template-file synth-easy-stack-packaged.yml --stack-name synth-easy --parameter-overrides \
             Application=${{ env.APPLICATION_NAME }} \
             Environment=dev \
-            LambdaBucketName=${{ env.LAMBDA_BUCKET_NAME }} \
+            LambdaBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             --capabilities CAPABILITY_IAM

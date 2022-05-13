@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: synth easy stack
 
 Parameters:
-  LambdaBucketName:
+  DeploymentBucketName:
     Type: String  
   TextExtractorLambdaZipFile:
     Type: String  
@@ -17,5 +17,5 @@ Resources:
         Environment: dev
         LambdaName: text-extractor
         LambdaHandler: index.handler
-        LambdaBucketName: !Ref LambdaBucketName
+        LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref TextExtractorLambdaZipFile
