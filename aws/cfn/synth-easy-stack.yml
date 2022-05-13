@@ -14,7 +14,7 @@ Resources:
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./content-repo-bucket.yml
+      TemplateURL: ./text-extractor-lambda.yml
       Parameters:
         Application: synth-easy
         Environment: dev
@@ -27,6 +27,6 @@ Resources:
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./text-extractor-lambda.yml
+      TemplateURL: ./content-repo-bucket.yml
       Parameters:
         BucketName: !Ref ContentRepoBucketName
