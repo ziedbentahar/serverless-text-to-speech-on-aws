@@ -60,7 +60,7 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Architectures:
         - arm64
-      Runtime: node14.x
+      Runtime: node14.19.2
       Timeout: 60
       MemorySize: 512
 
