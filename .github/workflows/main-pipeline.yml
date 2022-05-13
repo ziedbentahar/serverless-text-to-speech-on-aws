@@ -110,7 +110,7 @@ jobs:
         aws cloudformation deploy --template-file synth-easy-stack.packaged.yml --stack-name synth-easy --parameter-overrides \
             Application=${{ env.APPLICATION_NAME }} \
             Environment=dev \
-            LambdaBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
+            DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             --capabilities CAPABILITY_IAM
 
