@@ -10,7 +10,7 @@ on:
 
 env:
   APPLICATION_NAME: synth-easy
-  LAMBDA_BUCKET_NAME: synth-easy-lambda-sample-bucket
+  LAMBDA_BUCKET_NAME: synth-easy-lambda-bucket
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
 
@@ -69,7 +69,7 @@ jobs:
 
     - name: Create or update lambda bucket
       run: |
-        aws cloudformation deploy --template-file ./aws/cfn/lambda-bucket.yml --stack-name lambda-bucket --parameter-overrides LambdaBucketName=${{ env.LAMBDA_BUCKET_NAME}}
+        aws cloudformation deploy --template-file ./aws/cfn/lambda-bucket.yml --stack-name synth-easy-lambda-bucket --parameter-overrides LambdaBucketName=${{ env.LAMBDA_BUCKET_NAME}}
         
     - name: Upload to S3
       run: |
