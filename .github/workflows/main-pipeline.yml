@@ -9,7 +9,6 @@ on:
     branches: [ main ]
 
 env:
-  APPLICATION_PACKAGE: lambdaminimalapisample
   APPLICATION_NAME: synth-easy
   LAMBDA_BUCKET_NAME: synth-easy-lambda-sample-bucket
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
@@ -43,6 +42,10 @@ jobs:
     - name: Zip artifact
       run: |
         zip -r ${{ env.COMPONENT_NAME }}-${{ github.sha }}.zip  ./dist/*
+        ls
+        pwd
+
+      
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v3
