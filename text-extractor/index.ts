@@ -2,13 +2,12 @@ import { Readability } from "@mozilla/readability";
 import { Context } from "aws-lambda";
 import AWS from "aws-sdk";
 import { JSDOM } from "jsdom";
-import LanguageDetect from "languagedetect";
 import fetch from "node-fetch";
 
 const s3 = new AWS.S3();
 
-const languageDetection = new LanguageDetect();
-languageDetection.setLanguageType("iso3");
+const Languages = require("languages.io");
+const language = new Languages();
 
 export const handler = async (
   event: { articleUrl: string },
@@ -24,11 +23,8 @@ export const handler = async (
   const article = new Readability(doc.window.document).parse();
 
   if (article) {
-    const languageProbabilities = languageDetection.detect(
-      article!.textContent,
-      1
-    );
-    const lang = languageProbabilities[0][0];
+    const recognizedLang = language.recognize(article!.textContent);
+    const lang = recognizedLang.ISO639_3;
 
     const key = `${Buffer.from(articleUrl, "utf-8").toString("base64url")}`;
 
