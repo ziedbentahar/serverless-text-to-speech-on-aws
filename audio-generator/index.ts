@@ -16,7 +16,7 @@ export const handler = async (
 
   const storageParams = {
     Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
-    Key: `${articleKey}/content.json`,
+    Key: `${articleKey}/content`,
   };
 
   const response = await s3.getObject(storageParams).promise();
