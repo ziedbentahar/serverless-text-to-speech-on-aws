@@ -13,6 +13,7 @@ env:
   DEPLOYMENT_BUCKET_NAME: synth-easy-deployment-bucket
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
+  AUDIO_GENERATOR_COMPONENT_NAME: audio-generator
   CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
 
 jobs:
@@ -49,6 +50,42 @@ jobs:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
         path: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
+  
+
+  build-audio-generator:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: audio-generator
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3.1.1
+      with:
+        node-version: 14
+
+    - name: Restore dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Zip artifact
+      run: |
+        cd dist
+        zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+        path: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+
+
   create-or-update-deployment-bucket:
       runs-on: ubuntu-latest
       
@@ -67,8 +104,17 @@ jobs:
         run: |
           aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name synth-easy-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
     
+
+
+  
+
+
   upload-artifact-to-s3:
-    needs: [build-text-extractor, create-or-update-deployment-bucket]
+    needs: [
+      build-text-extractor, 
+      build-audio-generator, 
+      create-or-update-deployment-bucket
+    ]
     
     runs-on: ubuntu-latest
     
@@ -78,6 +124,10 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+    
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -88,7 +138,8 @@ jobs:
 
     - name: Upload to S3
       run: |
-        aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME}}
+        aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
+        aws s3 cp ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
 
 
   deploy:
@@ -113,6 +164,7 @@ jobs:
             Environment=dev \
             DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
+            AudioGeneratorLambdaZipFile=${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
             --capabilities CAPABILITY_IAM
         if [[$? -ne 0]];

@@ -15,12 +15,12 @@ export const handler = async (
   context: Context
 ): Promise<{ articleKey: string }> => {
   const { articleUrl } = event;
+
   const response = await fetch(event.articleUrl);
   const body = await response.text();
   const doc = new JSDOM(body, {
     url: articleUrl,
   });
-
   const article = new Readability(doc.window.document).parse();
 
   if (article) {

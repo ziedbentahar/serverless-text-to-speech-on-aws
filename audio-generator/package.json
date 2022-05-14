@@ -1,0 +1,24 @@
+{
+  "name": "audio-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "cp package*.json dist && cd dist && npm ci --production"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.97",
+    "@types/node": "^17.0.33",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "@aws-sdk/client-polly": "^3.87.0",
+    "@mozilla/readability": "^0.4.2",
+    "aws-sdk": "^2.1135.0"
+  }
+}

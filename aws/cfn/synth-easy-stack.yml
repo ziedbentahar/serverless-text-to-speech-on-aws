@@ -8,6 +8,8 @@ Parameters:
     Type: String  
   TextExtractorLambdaZipFile:
     Type: String
+  AudioGeneratorLambdaZipFile:
+    Type: String
   Environment:
     Type: String
     AllowedValues:
@@ -28,6 +30,19 @@ Resources:
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref TextExtractorLambdaZipFile
+        ContentRepoBucketName: !Ref ContentRepoBucketName
+
+  GenerateAudioLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./generate-audio-lambda.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        LambdaName: audio-generator
+        LambdaHandler: index.handler
+        LambdaBucketName: !Ref DeploymentBucketName
+        LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
   ContentRepoBucket:
