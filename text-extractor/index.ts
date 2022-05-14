@@ -2,11 +2,10 @@ import { Readability } from "@mozilla/readability";
 import { Context } from "aws-lambda";
 import AWS from "aws-sdk";
 import { JSDOM } from "jsdom";
+import Languages from "languages.io";
 import fetch from "node-fetch";
 
 const s3 = new AWS.S3();
-
-const Languages = require("languages.io");
 const language = new Languages();
 
 export const handler = async (
