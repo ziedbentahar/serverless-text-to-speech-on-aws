@@ -1,12 +1,12 @@
-import {
-  PollyClient,
-  StartSpeechSynthesisTaskCommand,
-} from "@aws-sdk/client-polly";
 import { Context } from "aws-lambda";
 import AWS from "aws-sdk";
 
-const pollyClient = new PollyClient({ region: process.env.AWS_REGION });
 const s3 = new AWS.S3({ region: process.env.AWS_REGION });
+
+const polly = new AWS.Polly({
+  signatureVersion: "v4",
+  region: process.env.AWS_REGION,
+});
 
 export const handler = async (
   event: { articleKey: string },
@@ -22,22 +22,10 @@ export const handler = async (
   const response = await s3.getObject(storageParams).promise();
   const articleContent = JSON.parse(response.Body!.toString("utf-8"));
 
-  const params = {
-    OutputFormat: "mp3",
-    OutputS3BucketName: process.env.CONTENT_REPO_BUCKET_NAME,
-    OutputS3KeyPrefix: `${articleKey}/audio.mp3`,
-    Text: articleContent.textContent,
-    TextType: "text",
-    VoiceId: "Joanna",
-    SampleRate: "22050",
-  };
-
   try {
-    const data = await pollyClient.send(
-      new StartSpeechSynthesisTaskCommand(params)
-    );
-    console.log("Success, audio file added to " + params.OutputS3BucketName);
-    console.log(data);
+    const audio = await synthesize(articleContent.textContent);
+    await saveAudio(articleKey, audio);
+    console.log(`Success, audio file added for ${articleKey} `);
   } catch (err) {
     console.log("Error putting object", err);
   }
@@ -46,3 +34,39 @@ export const handler = async (
     articleKey,
   };
 };
+
+const synthesize = async (text: string) => {
+  const splittedText = text.match(/.{1500}/g);
+
+  const audioBuffers = await Promise.all(
+    splittedText!.map((chunk) => {
+      return polly
+        .synthesizeSpeech({
+          OutputFormat: "mp3",
+          VoiceId: "Joanna",
+          TextType: "text",
+          Text: chunk,
+        })
+        .promise()
+        .then((data) => data.AudioStream);
+    })
+  );
+
+  const mergedBuffers = audioBuffers.reduce(
+    (total: Buffer, buffer: any) =>
+      Buffer.concat([total, buffer], total.length + buffer.length),
+    Buffer.alloc(1)
+  );
+
+  return mergedBuffers;
+};
+
+const saveAudio = async (articleKey: string, audioStream: any) =>
+  s3
+    .upload({
+      ContentType: "audio/mp3",
+      Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
+      Key: `${articleKey}/audio.mp3`,
+      Body: audioStream,
+    })
+    .promise();
