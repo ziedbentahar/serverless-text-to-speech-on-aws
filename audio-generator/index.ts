@@ -5,10 +5,8 @@ import {
 import { Context } from "aws-lambda";
 import AWS from "aws-sdk";
 
-// Set the AWS Region.
-const pollyClient = new PollyClient({});
-
-const s3 = new AWS.S3();
+const pollyClient = new PollyClient({ region: process.env.AWS_REGION });
+const s3 = new AWS.S3({ region: process.env.AWS_REGION });
 
 export const handler = async (
   event: { articleKey: string },
