@@ -34,7 +34,7 @@ export const handler = async (
 
     const storageParams = {
       Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
-      Key: `${key}/content`,
+      Key: `${key}/content.json`,
       Body: JSON.stringify({
         ...article,
         lang,
