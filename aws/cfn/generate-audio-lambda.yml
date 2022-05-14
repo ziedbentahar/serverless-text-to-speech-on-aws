@@ -54,11 +54,11 @@ Resources:
                 Resource: !Sub arn:aws:s3:::${ContentRepoBucketName}/*
         - PolicyName: polly
           PolicyDocument:
-          Statement:
-            - Effect: Allow
-              Action:
-                - polly:SynthesizeSpeech
-              Resource: *
+            Statement:
+              - Effect: Allow
+                Action:
+                  - polly:SynthesizeSpeech
+                Resource: "*"
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
