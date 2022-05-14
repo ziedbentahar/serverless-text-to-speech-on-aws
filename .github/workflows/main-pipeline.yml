@@ -143,7 +143,7 @@ jobs:
 
 
   deploy:
-    needs: [upload-artifact-to-s3]
+    needs: [upload-artifacts-to-s3]
     
     runs-on: ubuntu-latest
     
