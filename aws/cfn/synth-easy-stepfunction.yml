@@ -30,12 +30,12 @@ Resources:
           "States": {
             "ExtractText": {
               "Type": "Task",
-              "Resource": "${ExtractTextLambdaArn.Arn}",
+              "Resource": "${ExtractTextLambdaArn}",
               "Next": "GenerateAudio"
             },
             "GenerateAudio": {
               "Type": "Task",
-              "Resource": "${GenerateAudioLambdaArn.Arn}",
+              "Resource": "${GenerateAudioLambdaArn}",
               "Next": "Success"
             },
             "Done": {
@@ -61,8 +61,8 @@ Resources:
         PolicyDocument:
           Statement:
           - Effect: Allow
-            Action: 'lambda:InvokeFunction'
+            Action: lambda:InvokeFunction
             Resource:
-            - !GetAtt ExtractTextLambdaArn.Arn
-            - !GetAtt GenerateAudioLambdaArn.Arn
+            - !Ref ExtractTextLambdaArn
+            - !Ref GenerateAudioLambdaArn
 
