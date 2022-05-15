@@ -45,6 +45,22 @@ Resources:
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
+  SynthEasyStateMachine:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-stepfunction.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        ExtractTextLambdaArn: 
+           Fn::GetAtt: 
+            - TextExctractorLambda
+            - Outputs.LambdaFunctionArn
+        GenerateAudioLambdaArn:
+           Fn::GetAtt: 
+            - GenerateAudioLambda
+            - Outputs.LambdaFunctionArn
+
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
