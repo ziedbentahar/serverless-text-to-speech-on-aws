@@ -16,14 +16,17 @@ export const handler = async (
 
   const storageParams = {
     Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
-    Key: `${articleKey}/content`,
+    Key: `${articleKey}/content.json`,
   };
 
   const response = await s3.getObject(storageParams).promise();
   const articleContent = JSON.parse(response.Body!.toString("utf-8"));
 
   try {
-    const audio = await synthesize(articleContent.textContent);
+    const audio = await synthesize(
+      articleContent.textContent,
+      articleContent.iso2Lang
+    );
     await saveAudio(articleKey, audio);
     console.log(`Success, audio file added for ${articleKey} `);
   } catch (err) {
@@ -35,8 +38,10 @@ export const handler = async (
   };
 };
 
-const synthesize = async (text: string) => {
+const synthesize = async (text: string, iso2Lang: string) => {
   const splittedText = text.match(/.{1500}/g);
+
+  const langCode = iso2LangToLanguageCode[iso2Lang] || "en-EN";
 
   const audioBuffers = await Promise.all(
     splittedText!.map((chunk) => {
@@ -46,6 +51,8 @@ const synthesize = async (text: string) => {
           VoiceId: "Joanna",
           TextType: "text",
           Text: chunk,
+          LanguageCode: langCode,
+          Engine: "neural",
         })
         .promise()
         .then((data) => data.AudioStream);
@@ -70,3 +77,12 @@ const saveAudio = async (articleKey: string, audioStream: any) =>
       Body: audioStream,
     })
     .promise();
+
+const iso2LangToLanguageCode: { [iso2Lang: string]: string } = {
+  fr: "fr-FR",
+  en: "en-US",
+  ar: "arb",
+  de: "de-DE",
+  it: "it-IT",
+  es: "es-ES",
+};

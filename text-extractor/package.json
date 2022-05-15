@@ -21,7 +21,6 @@
     "aws-sdk": "^2.1135.0",
     "jsdom": "^19.0.0",
     "languagedetect": "^2.0.0",
-    "languages.io": "^0.9.1",
     "node-fetch": "^3.2.4"
   }
 }
