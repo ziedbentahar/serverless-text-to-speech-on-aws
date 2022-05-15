@@ -38,7 +38,7 @@ Resources:
               "Resource": "${GenerateAudioLambdaArn}",
               "Next": "Success"
             },
-            "Done": {
+            "Success": {
               "Type": "Succeed"
             }
           }
