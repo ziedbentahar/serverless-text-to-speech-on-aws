@@ -78,7 +78,7 @@ Resources:
           CONTENT_REPO_BUCKET_NAME: !Ref ContentRepoBucketName
 
 Outputs:
-  LambdaFunctionUrl:
+  LambdaFunctionArn:
     Description: Lambda An
     Value: !GetAtt LambdaFunction.Arn
     Export:

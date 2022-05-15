@@ -41,18 +41,19 @@ export const handler = async (
 const synthesize = async (text: string, iso2Lang: string) => {
   const splittedText = text.match(/.{1500}/g);
 
-  const langCode = iso2LangToLanguageCode[iso2Lang] || "en-EN";
+  const langConfig =
+    iso2LangToPollyParams[iso2Lang] || iso2LangToPollyParams["en"];
 
   const audioBuffers = await Promise.all(
     splittedText!.map((chunk) => {
       return polly
         .synthesizeSpeech({
           OutputFormat: "mp3",
-          VoiceId: "Joanna",
           TextType: "text",
           Text: chunk,
-          LanguageCode: langCode,
-          Engine: "neural",
+          LanguageCode: langConfig.langCode,
+          Engine: langConfig.engine,
+          VoiceId: langConfig.voiceId,
         })
         .promise()
         .then((data) => data.AudioStream);
@@ -78,11 +79,41 @@ const saveAudio = async (articleKey: string, audioStream: any) =>
     })
     .promise();
 
-const iso2LangToLanguageCode: { [iso2Lang: string]: string } = {
-  fr: "fr-FR",
-  en: "en-US",
-  ar: "arb",
-  de: "de-DE",
-  it: "it-IT",
-  es: "es-ES",
+const iso2LangToPollyParams: {
+  [iso2Lang: string]: {
+    langCode: string;
+    voiceId: string;
+    engine: "neural" | "standard";
+  };
+} = {
+  fr: {
+    engine: "neural",
+    voiceId: "Léa",
+    langCode: "fr-FR",
+  },
+  en: {
+    engine: "neural",
+    voiceId: "Joanna",
+    langCode: "en-US",
+  },
+  ar: {
+    engine: "standard",
+    voiceId: "Zeina",
+    langCode: "arb",
+  },
+  de: {
+    engine: "neural",
+    langCode: "de-DE",
+    voiceId: "Vicki",
+  },
+  it: {
+    engine: "neural",
+    langCode: "it-IT",
+    voiceId: "Bianca",
+  },
+  es: {
+    engine: "neural",
+    langCode: "es-ES",
+    voiceId: "Lucia",
+  },
 };

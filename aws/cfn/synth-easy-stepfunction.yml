@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Synth Easy Step function'
+
+Parameters:
+  Application:
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
+  ExtractTextLambdaArn:
+    Type: String
+  GenerateAudioLambdaArn:
+    Type: String
+
+
+Resources:
+  SynthEasyStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub ${Application}-${Environment}
+      StateMachineType: EXPRESS
+      DefinitionString: !Sub | 
+        {
+          "Comment": "SynEasy State Machine",
+          "StartAt": "ExtractText",
+          "Version": "1.0",
+          "States": {
+            "ExtractText": {
+              "Type": "Task",
+              "Resource": "${ExtractTextLambdaArn.Arn}",
+              "Next": "GenerateAudio"
+            },
+            "GenerateAudio": {
+              "Type": "Task",
+              "Resource": "${GenerateAudioLambdaArn.Arn}",
+              "Next": "Success"
+            },
+            "Done": {
+              "Type": "Succeed"
+            }
+          }
+        }
+      RoleArn: !GetAtt SynthEasyStateMachineRole.Arn
+
+
+  SynthEasyStateMachineRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: !Sub states.${AWS::Region}.amazonaws.com
+          Action: 'sts:AssumeRole'
+      Policies:
+      - PolicyName: lambda
+        PolicyDocument:
+          Statement:
+          - Effect: Allow
+            Action: 'lambda:InvokeFunction'
+            Resource:
+            - !GetAtt ExtractTextLambdaArn.Arn
+            - !GetAtt GenerateAudioLambdaArn.Arn
+
