@@ -88,7 +88,7 @@ const iso2LangToPollyParams: {
 } = {
   fr: {
     engine: "neural",
-    voiceId: "Léa",
+    voiceId: "Lea",
     langCode: "fr-FR",
   },
   en: {
