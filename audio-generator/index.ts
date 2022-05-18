@@ -29,43 +29,49 @@ export const handler = async (
     );
     await saveAudio(articleKey, audio);
     console.log(`Success, audio file added for ${articleKey} `);
+    return {
+      articleKey,
+    };
   } catch (err) {
     console.log("Error putting object", err);
+    throw err;
   }
-
-  return {
-    articleKey,
-  };
 };
 
-const synthesize = async (text: string, iso2Lang: string) => {
-  const splittedText = text.match(/.{1500}/g);
+const synthesize = async (paragraphs: string[], iso2Lang: string) => {
+  const audioBuffers: any[] = [];
+  for (let paragraph in paragraphs) {
+    paragraph = `${paragraph} <break strength="x-strong" />`;
 
-  const langConfig =
-    iso2LangToPollyParams[iso2Lang] || iso2LangToPollyParams["en"];
+    const splittedText = paragraph.match(/.{1400}/g);
 
-  const audioBuffers = await Promise.all(
-    splittedText!.map((chunk) => {
-      return polly
-        .synthesizeSpeech({
-          OutputFormat: "mp3",
-          TextType: "text",
-          Text: chunk,
-          LanguageCode: langConfig.langCode,
-          Engine: langConfig.engine,
-          VoiceId: langConfig.voiceId,
-        })
-        .promise()
-        .then((data) => data.AudioStream);
-    })
-  );
+    const langConfig =
+      iso2LangToPollyParams[iso2Lang] || iso2LangToPollyParams["en"];
+
+    const paragraphBuffers = await Promise.all(
+      splittedText!.map((chunk) => {
+        return polly
+          .synthesizeSpeech({
+            OutputFormat: "mp3",
+            TextType: "SSML",
+            Text: `<speak>${chunk}</speak>`,
+            LanguageCode: langConfig.langCode,
+            Engine: langConfig.engine,
+            VoiceId: langConfig.voiceId,
+          })
+          .promise()
+          .then((data) => data.AudioStream);
+      })
+    );
+
+    audioBuffers.push(paragraphBuffers);
+  }
 
   const mergedBuffers = audioBuffers.reduce(
     (total: Buffer, buffer: any) =>
       Buffer.concat([total, buffer], total.length + buffer.length),
     Buffer.alloc(1)
   );
-
   return mergedBuffers;
 };
 

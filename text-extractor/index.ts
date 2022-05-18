@@ -16,7 +16,9 @@ export const handler = async (
   const { articleUrl } = event;
 
   const response = await fetch(event.articleUrl);
-  const body = await response.text();
+  let body = await response.text();
+  body = body.replace(/<p>/g, "\n");
+
   const doc = new JSDOM(body, {
     url: articleUrl,
   });
@@ -33,6 +35,7 @@ export const handler = async (
       Key: `${key}/content.json`,
       Body: JSON.stringify({
         ...article,
+        paragraphs: article.textContent.split("\n"),
         iso2Lang,
       }),
     };

@@ -22,7 +22,7 @@ Resources:
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./text-extractor-lambda.yml
+      TemplateURL: ./synth-easy-components/text-extractor-lambda.yml
       Parameters:
         Application: synth-easy
         Environment: !Ref Environment
@@ -35,7 +35,7 @@ Resources:
   GenerateAudioLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./generate-audio-lambda.yml
+      TemplateURL: ./synth-easy-components/generate-audio-lambda.yml
       Parameters:
         Application: synth-easy
         Environment: !Ref Environment
@@ -45,21 +45,29 @@ Resources:
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
-  SynthEasyStateMachine:
+
+  ExtractKeyPhrases:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-stepfunction.yml
+      TemplateURL: ./synth-easy-components/extract-key-phrases-lambda.yml
       Parameters:
         Application: synth-easy
         Environment: !Ref Environment
-        ExtractTextLambdaArn: 
-           Fn::GetAtt: 
-            - TextExctractorLambda
-            - Outputs.LambdaFunctionArn
-        GenerateAudioLambdaArn:
-           Fn::GetAtt: 
-            - GenerateAudioLambda
-            - Outputs.LambdaFunctionArn
+        LambdaName: extract-key-phrases
+        LambdaHandler: index.handler
+        LambdaBucketName: !Ref DeploymentBucketName
+        LambdaZipFile: !Ref KeyPhrasesExtractorLambdaZipFile
+        ContentRepoBucketName: !Ref ContentRepoBucketName
+
+  SynthEasyStateMachine:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/synth-easy-stepfunction.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        ExtractTextLambdaArn: !GetAtt TextExctractorLambda.Outputs.LambdaFunctionArn
+        GenerateAudioLambdaArn: !GetAtt GenerateAudioLambda.Outputs.LambdaFunctionArn
 
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
