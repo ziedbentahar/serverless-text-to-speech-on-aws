@@ -40,13 +40,13 @@ export const handler = async (
 
 const synthesize = async (paragraphs: string[], iso2Lang: string) => {
   const audioBuffers: any[] = [];
+  const langConfig =
+    iso2LangToPollyParams[iso2Lang] || iso2LangToPollyParams["en"];
+
   for (let paragraph of paragraphs) {
     paragraph = `${paragraph} <break strength="x-strong" />`;
 
-    const splittedText = paragraph.match(/.{1400}/g);
-
-    const langConfig =
-      iso2LangToPollyParams[iso2Lang] || iso2LangToPollyParams["en"];
+    const splittedText = chunkString(paragraph, 1400);
 
     const paragraphBuffers = await Promise.all(
       splittedText!.map((chunk) => {
@@ -73,6 +73,14 @@ const synthesize = async (paragraphs: string[], iso2Lang: string) => {
     Buffer.alloc(1)
   );
   return mergedBuffers;
+};
+
+const chunkString = (paragraph: string, chunkSize: number) => {
+  let splitString = [];
+  for (let i = 0; i < paragraph.length; i = i + chunkSize) {
+    splitString.push(paragraph.slice(i, i + chunkSize));
+  }
+  return splitString;
 };
 
 const saveAudio = async (articleKey: string, audioStream: any) =>
