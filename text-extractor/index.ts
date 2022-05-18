@@ -17,7 +17,7 @@ export const handler = async (
 
   const response = await fetch(event.articleUrl);
   let body = await response.text();
-  body = body.replace(/<p>/g, "\n");
+  body = addNewLinesBetweenParagaphs(body);
 
   const doc = new JSDOM(body, {
     url: articleUrl,
@@ -35,7 +35,7 @@ export const handler = async (
       Key: `${key}/content.json`,
       Body: JSON.stringify({
         ...article,
-        paragraphs: article.textContent.split("\n"),
+        paragraphs: mapTextContentToParagraphArray(article.textContent),
         iso2Lang,
       }),
     };
@@ -49,3 +49,15 @@ export const handler = async (
 
   throw new Error(`${articleUrl} was not processed`);
 };
+
+const addNewLinesBetweenParagaphs = (body: string) =>
+  body
+    .replace(/<p>/g, "\n<p>")
+    .replace(/<p class/g, "\n<p class")
+    .replace(/<\/p>/g, "</p>\n");
+
+const mapTextContentToParagraphArray = (textContent: string) =>
+  textContent
+    .split("\n")
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);

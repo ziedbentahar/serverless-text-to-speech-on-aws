@@ -24,7 +24,7 @@ export const handler = async (
 
   try {
     const audio = await synthesize(
-      articleContent.textContent,
+      articleContent.paragraphs,
       articleContent.iso2Lang
     );
     await saveAudio(articleKey, audio);
