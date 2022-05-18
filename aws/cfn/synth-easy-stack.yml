@@ -18,7 +18,6 @@ Parameters:
       - prod
 
 Resources:
-
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
@@ -58,7 +57,7 @@ Resources:
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./content-repo-bucket.yml
+      TemplateURL: ./synth-easy-components/content-repo-bucket.yml
       Parameters:
         BucketName: !Ref ContentRepoBucketName
         Environment: !Ref Environment
