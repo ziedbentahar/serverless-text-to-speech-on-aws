@@ -1,5 +1,6 @@
 import { Context } from "aws-lambda";
 import AWS from "aws-sdk";
+import { AudioStream } from "aws-sdk/clients/polly";
 
 const s3 = new AWS.S3({ region: process.env.AWS_REGION });
 
@@ -39,17 +40,17 @@ export const handler = async (
 };
 
 const synthesize = async (paragraphs: string[], iso2Lang: string) => {
-  const audioBuffers: any[] = [];
+  const audioBuffers: AudioStream[] = [];
   const langConfig =
     iso2LangToPollyParams[iso2Lang] || iso2LangToPollyParams["en"];
 
-  for (let paragraph of paragraphs) {
-    paragraph = `${paragraph} <break strength="x-strong" />`;
+  for (const paragraph of paragraphs) {
+    const paragraphWithBreak = `${paragraph} <break strength="x-strong" />`;
 
-    const splittedText = chunkString(paragraph, 1400);
+    const splittedText = chunkString(paragraphWithBreak, 1400);
 
     const paragraphBuffers = await Promise.all(
-      splittedText!.map((chunk) => {
+      splittedText.map((chunk) => {
         return polly
           .synthesizeSpeech({
             OutputFormat: "mp3",
@@ -60,11 +61,11 @@ const synthesize = async (paragraphs: string[], iso2Lang: string) => {
             VoiceId: langConfig.voiceId,
           })
           .promise()
-          .then((data) => data.AudioStream);
+          .then((data) => data.AudioStream!);
       })
     );
 
-    audioBuffers.push(paragraphBuffers);
+    audioBuffers.push(...paragraphBuffers);
   }
 
   const mergedBuffers = audioBuffers.reduce(
