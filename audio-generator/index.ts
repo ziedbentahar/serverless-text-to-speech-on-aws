@@ -53,7 +53,7 @@ const synthesize = async (paragraphs: string[], iso2Lang: string) => {
         return polly
           .synthesizeSpeech({
             OutputFormat: "mp3",
-            TextType: "SSML",
+            TextType: "ssml",
             Text: `<speak>${chunk}</speak>`,
             LanguageCode: langConfig.langCode,
             Engine: langConfig.engine,
