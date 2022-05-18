@@ -45,20 +45,6 @@ Resources:
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
-
-  ExtractKeyPhrases:
-    Type: AWS::CloudFormation::Stack
-    Properties: 
-      TemplateURL: ./synth-easy-components/extract-key-phrases-lambda.yml
-      Parameters:
-        Application: synth-easy
-        Environment: !Ref Environment
-        LambdaName: extract-key-phrases
-        LambdaHandler: index.handler
-        LambdaBucketName: !Ref DeploymentBucketName
-        LambdaZipFile: !Ref KeyPhrasesExtractorLambdaZipFile
-        ContentRepoBucketName: !Ref ContentRepoBucketName
-
   SynthEasyStateMachine:
     Type: AWS::CloudFormation::Stack
     Properties: 
