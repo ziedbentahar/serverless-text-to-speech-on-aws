@@ -40,7 +40,7 @@ export const handler = async (
 
 const synthesize = async (paragraphs: string[], iso2Lang: string) => {
   const audioBuffers: any[] = [];
-  for (let paragraph in paragraphs) {
+  for (let paragraph of paragraphs) {
     paragraph = `${paragraph} <break strength="x-strong" />`;
 
     const splittedText = paragraph.match(/.{1400}/g);
