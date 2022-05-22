@@ -50,22 +50,17 @@ jobs:
         cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
         zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
-    - name: d
-      run: |
-        cd dist && cd ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }} && ls 
-        cd dist && cd ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} && ls 
-
     - name: Upload {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-        path: dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+        path: ./dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
     - name: Upload {{ env.AUDIO_GENERATOR_COMPONENT_NAME }} build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
-        path: dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+        path: ./dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
   create-or-update-deployment-bucket:
       runs-on: ubuntu-latest
