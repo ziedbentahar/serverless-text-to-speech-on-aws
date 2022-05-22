@@ -17,7 +17,8 @@ env:
   CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
 
 jobs:
-  build-text-extractor:
+
+  build-lambdas: 
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,54 +38,29 @@ jobs:
       run: npm install
 
     - name: Build
-      run: npm run build
+      run: npm run bundle
 
-    - name: Zip artifact
+    - name: Zip {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} artifact
       run: |
-        cd dist
+        cd dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
         zip -r ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
-    - name: Upload build artifact
+    - name: Zip {{ env.AUDIO_GENERATOR_COMPONENT_NAME }} artifact
+      run: |
+        cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+        zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
+    - name: Upload {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-        path: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+        path: dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
-  
-
-  build-audio-generator:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: audio-generator
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Setup Node
-      uses: actions/setup-node@v3.1.1
-      with:
-        node-version: 14
-
-    - name: Restore dependencies
-      run: npm install
-
-    - name: Build
-      run: npm run build
-
-    - name: Zip artifact
-      run: |
-        cd dist
-        zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
-
-    - name: Upload build artifact
+    - name: Upload {{ env.AUDIO_GENERATOR_COMPONENT_NAME }} build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
-        path: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
-
+        path: dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
   create-or-update-deployment-bucket:
       runs-on: ubuntu-latest
@@ -103,16 +79,10 @@ jobs:
       - name: Create or update deployment bucket
         run: |
           aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name synth-easy-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
-    
-
-
-  
-
 
   upload-artifacts-to-s3:
     needs: [
-      build-text-extractor, 
-      build-audio-generator, 
+      build-lambdas, 
       create-or-update-deployment-bucket
     ]
     
