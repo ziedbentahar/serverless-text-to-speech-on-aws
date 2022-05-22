@@ -50,6 +50,11 @@ jobs:
         cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
         zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
+    - name: d
+      run: |
+        ls
+        cd dist && ls
+
     - name: Upload {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} build artifact
       uses: actions/upload-artifact@v3
       with:
