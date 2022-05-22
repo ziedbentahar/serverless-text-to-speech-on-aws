@@ -52,8 +52,8 @@ jobs:
 
     - name: d
       run: |
-        ls
-        cd dist && ls
+        cd dist && cd ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }} && ls 
+        cd dist && cd ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} && ls 
 
     - name: Upload {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} build artifact
       uses: actions/upload-artifact@v3
