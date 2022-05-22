@@ -23,7 +23,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: text-extractor
+        working-directory: src/backend
 
     steps:
     - name: Checkout
