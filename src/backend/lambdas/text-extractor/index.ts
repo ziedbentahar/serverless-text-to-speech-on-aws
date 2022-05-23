@@ -4,6 +4,7 @@ import AWS from "aws-sdk";
 import { JSDOM } from "jsdom";
 import LanguageDetect from "languagedetect";
 import fetch from "node-fetch";
+import { buildArticleContentKey, buildKeyFomUrl } from "../shared/keyBuilder";
 
 const s3 = new AWS.S3();
 const languageDetector = new LanguageDetect();
@@ -28,11 +29,11 @@ export const handler = async (
     const recognizedLang = languageDetector.detect(article!.textContent, 1);
     const [iso2Lang, _] = recognizedLang[0];
 
-    const key = `${Buffer.from(articleUrl, "utf-8").toString("base64url")}`;
+    const key = buildKeyFomUrl(articleUrl);
 
     const storageParams = {
       Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
-      Key: `${key}/content.json`,
+      Key: buildArticleContentKey(key),
       Body: JSON.stringify({
         ...article,
         paragraphs: mapTextContentToParagraphArray(article.textContent),

@@ -1,6 +1,10 @@
 import { Context } from "aws-lambda";
 import AWS from "aws-sdk";
 import { AudioStream } from "aws-sdk/clients/polly";
+import {
+  buildArticleAudioKey,
+  buildArticleContentKey,
+} from "../shared/keyBuilder";
 
 const s3 = new AWS.S3({ region: process.env.AWS_REGION });
 
@@ -17,7 +21,7 @@ export const handler = async (
 
   const storageParams = {
     Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
-    Key: `${articleKey}/content.json`,
+    Key: buildArticleContentKey(articleKey),
   };
 
   const response = await s3.getObject(storageParams).promise();
@@ -89,7 +93,7 @@ const saveAudio = async (articleKey: string, audioStream: any) =>
     .upload({
       ContentType: "audio/mp3",
       Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
-      Key: `${articleKey}/audio.mp3`,
+      Key: buildArticleAudioKey(articleKey),
       Body: audioStream,
     })
     .promise();
