@@ -14,6 +14,7 @@ env:
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
   AUDIO_GENERATOR_COMPONENT_NAME: audio-generator
+  START_TASK_COMPONENT_NAME: start-task
   CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
 
 jobs:
@@ -40,27 +41,39 @@ jobs:
     - name: Build
       run: npm run bundle
 
-    - name: Zip {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} artifact
+    - name: Zip text-extractor artifact
       run: |
         cd dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
         zip -r ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
-    - name: Zip {{ env.AUDIO_GENERATOR_COMPONENT_NAME }} artifact
+    - name: Zip audio-generator artifact
       run: |
         cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
         zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
-    - name: Upload {{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} build artifact
+    - name: Zip start-task artifact
+      run: |
+        cd dist/${{ env.START_TASK_COMPONENT_NAME }}
+        zip -r ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
+    - name: Upload text-extractor build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
         path: src/backend/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
-    - name: Upload {{ env.AUDIO_GENERATOR_COMPONENT_NAME }} build artifact
+    - name: Upload audio-generator build artifact
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
         path: src/backend/dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+
+    - name: Upload start-task build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.START_TASK_COMPONENT_NAME }}
+        path: src/backend/dist/${{ env.START_TASK_COMPONENT_NAME }}/${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip
+
 
   create-or-update-deployment-bucket:
       runs-on: ubuntu-latest
@@ -98,6 +111,10 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.START_TASK_COMPONENT_NAME }}
    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -110,6 +127,7 @@ jobs:
       run: |
         aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
         aws s3 cp ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
+        aws s3 cp ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
 
 
   deploy:
@@ -135,6 +153,7 @@ jobs:
             DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             AudioGeneratorLambdaZipFile=${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
+            StartTaskLambdaZipFile=${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip \
             ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
             --capabilities CAPABILITY_IAM
         if [[$? -ne 0]];

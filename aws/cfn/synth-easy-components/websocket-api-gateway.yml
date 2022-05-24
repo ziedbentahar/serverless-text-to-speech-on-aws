@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Synth easy Api gateway websocket api
+
+Parameters:
+  Application:
+    Type: String
+  OnStartTaskLambdaFunctionArn:
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
+
+Resources:
+  WebSocketApi:
+    Type: 'AWS::ApiGatewayV2::Api'
+    Properties:
+      Name: !Sub ${Application}-websocket-api-gateway
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: "$request.body.action"
+
+  # OnConnectIntegration:
+  #     Type: AWS::ApiGatewayV2::Integration
+  #     Properties:
+  #       ApiId: !Ref WebSocketApi
+  #       Description: OnConnect Integration
+  #       IntegrationType: AWS_PROXY
+  #       IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnConnectLambdaFunctionArn}/invocations
+  
+    
+  # OnConnectRoute:
+  #   Type: AWS::ApiGatewayV2::Route
+  #   Properties:
+  #     ApiId: !Ref WebSocketApi
+  #     RouteKey: $connect
+  #     AuthorizationType: NONE
+  #     OperationName: OnConnectRoute
+  #     Target: !Join
+  #       - '/'
+  #       - - 'integrations'
+  #         - !Ref OnConnectIntegration
+
+  StartTaskIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref WebSocketApi
+      Description: Start Task Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnStartTaskLambdaFunctionArn}/invocations
+
+  StartTaskRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref WebSocketApi
+      RouteKey: post
+      AuthorizationType: NONE
+      OperationName: StartTask
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref StartTaskIntegration
+
+  # OnDisconnectIntegration:
+  #   Type: AWS::ApiGatewayV2::Integration
+  #   Properties:
+  #     ApiId: !Ref WebSocketApi
+  #     Description: OnDisconnect Integration
+  #     IntegrationType: AWS_PROXY
+  #     IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectLambdaFunctionArn}/invocations
+  
+  # OnDisconnectRoute:
+  #   Type: AWS::ApiGatewayV2::Route
+  #   Properties:
+  #     ApiId: !Ref WebSocketApi
+  #     RouteKey: $disconnect
+  #     AuthorizationType: NONE
+  #     OperationName: OnDisconnectRoute
+  #     Target: !Join
+  #       - '/'
+  #       - - 'integrations'
+  #         - !Ref OnDisconnectIntegration
+
+  # OnConnectFunctionResourcePermission:
+  #   Type: 'AWS::Lambda::Permission'
+  #   Properties:
+  #     Action: 'lambda:InvokeFunction'
+  #     Principal: apigateway.amazonaws.com
+  #     FunctionName: !Ref OnConnectLambdaFunctionArn
+  #     SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
+ 
+  StartTaskFunctionResourcePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      Principal: apigateway.amazonaws.com
+      FunctionName: !Ref OnStartTaskLambdaFunctionArn
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
+
+  # OnDisconnectFunctionResourcePermission:
+  #   Type: 'AWS::Lambda::Permission'
+  #   Properties:
+  #     Action: 'lambda:InvokeFunction'
+  #     Principal: apigateway.amazonaws.com
+  #     FunctionName: !Ref OnDisconnectLambdaFunctionArn
+  #     SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
+  
+  Deployment:
+    Type: AWS::ApiGatewayV2::Deployment
+    DependsOn:
+      - StartTaskRoute
+    Properties:
+      ApiId: !Ref WebSocketApi
+  Stage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      StageName: !Ref Environment
+      Description: Prod Stage
+      DeploymentId: !Ref Deployment
+      ApiId: !Ref WebSocketApi
+
+Outputs:
+  WebSocketApiArn:
+    Value: !Ref WebSocketApi
+  WebSocketURL:
+    Description: "The WSS Protocol URL to connect to"
+    Value: !Join [ '', [ 'wss://', !Ref WebSocketApi, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]

@@ -10,6 +10,8 @@ Parameters:
     Type: String
   AudioGeneratorLambdaZipFile:
     Type: String
+  StartTaskLambdaZipFile:
+    Type: String
   Environment:
     Type: String
     AllowedValues:
@@ -44,6 +46,20 @@ Resources:
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
+
+  StartTaskLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/start-task-lambda.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        LambdaName: start-task
+        LambdaHandler: index.handler
+        LambdaBucketName: !Ref DeploymentBucketName
+        LambdaZipFile: !Ref StartTaskLambdaZipFile
+        StateMachineArn: !GetAtt SynthEasyStateMachine.Outputs.StateMachineArn
+
   SynthEasyStateMachine:
     Type: AWS::CloudFormation::Stack
     Properties: 
@@ -61,3 +77,13 @@ Resources:
       Parameters:
         BucketName: !Ref ContentRepoBucketName
         Environment: !Ref Environment
+
+  WebSocketApiGateway:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/websocket-api-gateway.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        OnStartTaskLambdaFunctionArn: !GetAtt StartTaskLambda.Outputs.LambdaFunctionArn
+        

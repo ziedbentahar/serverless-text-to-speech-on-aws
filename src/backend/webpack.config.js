@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     ["audio-generator"]: "./lambdas/audio-generator/index.ts",
     ["text-extractor"]: "./lambdas/text-extractor/index.ts",
+    ["start-task"]: "./lambdas/start-task/index.ts",
   },
   target: "node",
   output: {
@@ -36,5 +37,4 @@ module.exports = {
     "utf-8-validate": "utf-8-validate",
     bufferutil: "bufferutil",
   },
- 
 };
