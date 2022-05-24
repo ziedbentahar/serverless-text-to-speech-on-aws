@@ -21,27 +21,6 @@ Resources:
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: "$request.body.action"
 
-  # OnConnectIntegration:
-  #     Type: AWS::ApiGatewayV2::Integration
-  #     Properties:
-  #       ApiId: !Ref WebSocketApi
-  #       Description: OnConnect Integration
-  #       IntegrationType: AWS_PROXY
-  #       IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnConnectLambdaFunctionArn}/invocations
-  
-    
-  # OnConnectRoute:
-  #   Type: AWS::ApiGatewayV2::Route
-  #   Properties:
-  #     ApiId: !Ref WebSocketApi
-  #     RouteKey: $connect
-  #     AuthorizationType: NONE
-  #     OperationName: OnConnectRoute
-  #     Target: !Join
-  #       - '/'
-  #       - - 'integrations'
-  #         - !Ref OnConnectIntegration
-
   StartTaskIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:

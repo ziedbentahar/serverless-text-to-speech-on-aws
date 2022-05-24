@@ -50,6 +50,7 @@ Resources:
 
   NotifySuccessLambda:
     Type: AWS::CloudFormation::Stack
+    DependsOn: WebSocketApiGateway
     Properties: 
       TemplateURL: ./synth-easy-components/notify-success-lambda.yml
       Parameters:
@@ -96,10 +97,12 @@ Resources:
 
   WebSocketApiGateway:
     Type: AWS::CloudFormation::Stack
+    DependsOn: StartTaskLambda
     Properties: 
       TemplateURL: ./synth-easy-components/websocket-api-gateway.yml
       Parameters:
         Application: synth-easy
         Environment: !Ref Environment
         OnStartTaskLambdaFunctionArn: !GetAtt StartTaskLambda.Outputs.LambdaFunctionArn
+      
         
