@@ -9,7 +9,10 @@ const apigwManagementApi = new AWS.ApiGatewayManagementApi({
 });
 
 export const handler = async (
-  event: { articleKey: string; connectionId: string },
+  event: {
+    articleKey: string;
+    connectionId: string;
+  },
   context: Context
 ): Promise<{ audioUrl: string }> => {
   const { articleKey, connectionId } = event;

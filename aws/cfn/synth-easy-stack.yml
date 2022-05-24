@@ -22,6 +22,16 @@ Parameters:
       - prod
 
 Resources:
+
+  WebSocketApiGateway:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/websocket-api-gateway.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        OnStartTaskLambdaFunctionArn: !GetAtt StartTaskLambda.Outputs.LambdaFunctionArn
+
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
@@ -50,7 +60,6 @@ Resources:
 
   NotifySuccessLambda:
     Type: AWS::CloudFormation::Stack
-    DependsOn: WebSocketApiGateway
     Properties: 
       TemplateURL: ./synth-easy-components/notify-success-lambda.yml
       Parameters:
@@ -61,7 +70,8 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref NotifySuccessLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
-        WebSocketApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.WebSocketApiGatewayEndpoint
+        WebSocketApiEndpoint: !GetAtt WebSocketApiGateway.Outputs.WebSocketApiGatewayEndpoint
+        WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
   StartTaskLambda:
     Type: AWS::CloudFormation::Stack
@@ -74,7 +84,6 @@ Resources:
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref StartTaskLambdaZipFile
-        StateMachineArn: !GetAtt SynthEasyStateMachine.Outputs.StateMachineArn
 
   SynthEasyStateMachine:
     Type: AWS::CloudFormation::Stack
@@ -95,14 +104,6 @@ Resources:
         BucketName: !Ref ContentRepoBucketName
         Environment: !Ref Environment
 
-  WebSocketApiGateway:
-    Type: AWS::CloudFormation::Stack
-    DependsOn: StartTaskLambda
-    Properties: 
-      TemplateURL: ./synth-easy-components/websocket-api-gateway.yml
-      Parameters:
-        Application: synth-easy
-        Environment: !Ref Environment
-        OnStartTaskLambdaFunctionArn: !GetAtt StartTaskLambda.Outputs.LambdaFunctionArn
+
       
         

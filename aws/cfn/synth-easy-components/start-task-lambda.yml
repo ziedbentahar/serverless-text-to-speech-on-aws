@@ -20,7 +20,6 @@ Parameters:
     Type: String
   StateMachineArn:
     Type: String
-  
 
 Resources:
   LambdaExecutionRole:
@@ -51,7 +50,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - states:StartExecution
-                Resource: !Ref StateMachineArn
+                Resource: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${Application}-${Environment}
       
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -75,7 +74,7 @@ Resources:
       MemorySize: 512
       Environment:
         Variables:
-          STATE_MACHINE_ARN: !Ref StateMachineArn
+          STATE_MACHINE_ARN: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${Application}-${Environment}
       
 Outputs:
   LambdaFunctionArn:
