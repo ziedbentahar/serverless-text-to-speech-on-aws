@@ -60,6 +60,7 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref NotifySuccessLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
+        WebSocketApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.WebSocketApiGatewayEndpoint
 
   StartTaskLambda:
     Type: AWS::CloudFormation::Stack
