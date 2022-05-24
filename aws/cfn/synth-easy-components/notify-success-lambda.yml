@@ -20,7 +20,7 @@ Parameters:
     Type: String
   ContentRepoBucketName:
     Type: String
-  WebSocketApiEndpoint:
+  ApiGatewayEndpoint:
     Type: String
   WebSocketApi:
     Type: String
@@ -86,7 +86,7 @@ Resources:
       Environment:
         Variables:
           CONTENT_REPO_BUCKET_NAME: !Ref ContentRepoBucketName
-          WS_NOTIFICATION_ENDPOINT: !Ref WebSocketApiEndpoint
+          NOTIFICATION_ENDPOINT: !Ref ApiGatewayEndpoint
 
 Outputs:
   LambdaFunctionArn:

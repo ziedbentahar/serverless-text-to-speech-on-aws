@@ -70,3 +70,6 @@ Outputs:
   WebSocketApiGatewayEndpoint:
     Description: "The WSS Protocol URL to connect to"
     Value: !Join [ '', [ 'wss://', !Ref WebSocketApi, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]
+  ApiGatewayEndpoint:
+    Description: "ApiGatewayEndpoint"
+    Value: !Join [ '', [ !Ref WebSocketApi, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]

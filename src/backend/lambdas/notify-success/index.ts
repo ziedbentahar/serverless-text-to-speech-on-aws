@@ -5,7 +5,7 @@ import { buildArticleAudioKey } from "../shared/keyBuilder";
 const s3 = new AWS.S3({ region: process.env.AWS_REGION });
 const apigwManagementApi = new AWS.ApiGatewayManagementApi({
   apiVersion: "2018-11-29",
-  endpoint: process.env.WS_NOTIFICATION_ENDPOINT?.replace("wss", "https"),
+  endpoint: process.env.NOTIFICATION_ENDPOINT,
 });
 
 export const handler = async (
@@ -23,8 +23,6 @@ export const handler = async (
   };
 
   const audioUrl = await s3.getSignedUrlPromise("getObject", storageParams);
-
-  console.log(process.env.WS_NOTIFICATION_ENDPOINT);
 
   await apigwManagementApi
     .postToConnection({

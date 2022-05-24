@@ -70,7 +70,7 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref NotifySuccessLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
-        WebSocketApiEndpoint: !GetAtt WebSocketApiGateway.Outputs.WebSocketApiGatewayEndpoint
+        ApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.ApiGatewayEndpoint
         WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
   StartTaskLambda:
