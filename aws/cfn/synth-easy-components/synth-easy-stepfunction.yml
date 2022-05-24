@@ -41,7 +41,7 @@ Resources:
             },
             "NotifySuccess": {
               "Type": "Task",
-              "Resource": "${GenerateAudioLambdaArn}",
+              "Resource": "${NotifySuccessLambdaArn}",
               "Next": "Success"
             },
             "Success": {
