@@ -55,14 +55,13 @@ Resources:
                 Action:
                   - s3:GetObject
                 Resource: !Sub arn:aws:s3:::${ContentRepoBucketName}/*
-        - PolicyName: ws api-gateway
+        - PolicyName: ws-api-gateway
           PolicyDocument: 
             Statement:
               - Effect: Allow
                 Action:
                 - 'execute-api:ManageConnections'
-                Resource:
-                - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
+                Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
