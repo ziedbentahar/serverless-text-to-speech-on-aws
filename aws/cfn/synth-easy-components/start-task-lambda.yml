@@ -50,7 +50,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - states:StartExecution
-                Resource: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${Application}-${Environment}
+                Resource: !Ref StateMachineArn
       
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -74,7 +74,7 @@ Resources:
       MemorySize: 512
       Environment:
         Variables:
-          STATE_MACHINE_ARN: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${Application}-${Environment}
+          STATE_MACHINE_ARN: !Ref StateMachineArn
       
 Outputs:
   LambdaFunctionArn:

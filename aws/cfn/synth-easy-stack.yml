@@ -84,6 +84,7 @@ Resources:
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref StartTaskLambdaZipFile
+        StateMachineArn: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${Application}-${Environment}
 
   SynthEasyStateMachine:
     Type: AWS::CloudFormation::Stack
