@@ -14,10 +14,10 @@ const polly = new AWS.Polly({
 });
 
 export const handler = async (
-  event: { articleKey: string },
+  event: { articleKey: string; connectionId: string },
   context: Context
-): Promise<{ articleKey: string }> => {
-  const { articleKey } = event;
+): Promise<{ articleKey: string; connectionId: string }> => {
+  const { articleKey, connectionId } = event;
 
   const storageParams = {
     Bucket: process.env.CONTENT_REPO_BUCKET_NAME!,
@@ -36,6 +36,7 @@ export const handler = async (
     console.log(`Success, audio file added for ${articleKey} `);
     return {
       articleKey,
+      connectionId,
     };
   } catch (err) {
     console.log("Error putting object", err);

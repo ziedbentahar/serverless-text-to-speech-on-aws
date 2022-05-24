@@ -11,10 +11,10 @@ const languageDetector = new LanguageDetect();
 languageDetector.setLanguageType("iso2");
 
 export const handler = async (
-  event: { articleUrl: string },
+  event: { articleUrl: string; connectionId: string },
   context: Context
-): Promise<any> => {
-  const { articleUrl } = event;
+): Promise<{ articleKey: string; connectionId: string }> => {
+  const { articleUrl, connectionId } = event;
 
   const response = await fetch(event.articleUrl);
   let body = await response.text();
@@ -45,6 +45,7 @@ export const handler = async (
 
     return {
       articleKey: key,
+      connectionId,
     };
   }
 

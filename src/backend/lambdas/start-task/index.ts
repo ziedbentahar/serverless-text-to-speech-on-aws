@@ -17,8 +17,6 @@ export const handler = async (
     articleUrl: string;
   };
 
-  console.log(JSON.stringify(articleUrl));
-
   var params = {
     stateMachineArn: process.env.STATE_MACHINE_ARN!,
     input: JSON.stringify({ articleUrl, connectionId }),
