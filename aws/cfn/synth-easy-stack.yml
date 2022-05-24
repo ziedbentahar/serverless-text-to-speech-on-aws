@@ -111,6 +111,7 @@ Resources:
         ExtractTextLambdaArn: !GetAtt TextExctractorLambda.Outputs.LambdaFunctionArn
         GenerateAudioLambdaArn: !GetAtt GenerateAudioLambda.Outputs.LambdaFunctionArn
         NotifySuccessLambdaArn: !GetAtt NotifySuccessLambda.Outputs.LambdaFunctionArn
+        HandleErrorLambdaArn: !GetAtt HandleErrorLambda.Outputs.LambdaFunctionArn
 
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack

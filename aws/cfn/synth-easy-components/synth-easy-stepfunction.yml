@@ -67,6 +67,10 @@ Resources:
             "ErrorHandler": {
               Type: "Task",
               "Resource": "${HandleErrorLambdaArn}"
+              "Next": "Error"
+            },
+            "Error": {
+              "Type": "Fail"
             }
             "Success": {
               "Type": "Succeed"
