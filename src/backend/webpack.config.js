@@ -8,6 +8,7 @@ module.exports = {
     ["text-extractor"]: "./lambdas/text-extractor/index.ts",
     ["start-task"]: "./lambdas/start-task/index.ts",
     ["notify-success"]: "./lambdas/notify-success/index.ts",
+    ["handle-error"]: "./lambdas/handle-error/index.ts",
   },
   target: "node",
   output: {
