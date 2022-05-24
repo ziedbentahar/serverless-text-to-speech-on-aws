@@ -37,7 +37,7 @@ Resources:
               "Next": "GenerateAudio",
               "Catch": [
                 {
-                  "ErrorEquals": [ "States.All" ],
+                  "ErrorEquals": [ "States.ALL" ],
                   "Next": "ErrorHandler",
                   "ResultPath": "$.error"
                 }]
@@ -48,7 +48,7 @@ Resources:
               "Next": "NotifySuccess",
               "Catch": [
               {
-                "ErrorEquals": [ "States.All" ],
+                "ErrorEquals": [ "States.ALL" ],
                 "Next": "ErrorHandler",
                 "ResultPath": "$.error"
               }]
@@ -59,7 +59,7 @@ Resources:
               "Next": "Success",
               "Catch": [
               {
-                "ErrorEquals": [ "States.All" ],
+                "ErrorEquals": [ "States.ALL" ],
                 "Next": "ErrorHandler",
                 "ResultPath": "$.error"
               }]
