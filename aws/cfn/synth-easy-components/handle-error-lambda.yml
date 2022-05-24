@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Handle error Lambda
+
+Parameters:
+  Application:
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
+  LambdaName:
+    Type: String
+  LambdaHandler:
+    Type: String
+  LambdaBucketName:
+    Type: String
+  LambdaZipFile:
+    Type: String
+  ApiGatewayEndpoint:
+    Type: String
+  WebSocketApi:
+    Type: String
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: logs
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "arn:aws:logs:*:*:*"
+        - PolicyName: ws-api-gateway
+          PolicyDocument: 
+            Statement:
+              - Effect: Allow
+                Action:
+                - 'execute-api:ManageConnections'
+                Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
+
+  LambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ["/", ["/aws/lambda", !Ref LambdaFunction]]
+      RetentionInDays: 7 # days
+
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${Application}-${Environment}-${LambdaName}
+      Code:
+        S3Bucket: !Sub ${LambdaBucketName}
+        S3Key: !Sub ${LambdaZipFile}
+      Handler: !Sub ${LambdaHandler}
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Architectures:
+        - arm64
+      Runtime: nodejs14.x
+      Timeout: 60
+      MemorySize: 512
+      Environment:
+        Variables:
+          NOTIFICATION_ENDPOINT: !Ref ApiGatewayEndpoint
+
+Outputs:
+  LambdaFunctionArn:
+    Description: Lambda An
+    Value: !GetAtt LambdaFunction.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-handle-error-lambda-arn

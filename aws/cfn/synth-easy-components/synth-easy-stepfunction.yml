@@ -16,6 +16,8 @@ Parameters:
     Type: String
   NotifySuccessLambdaArn:
     Type: String
+  HandleErrorLambdaArn:
+    Type: String
 
 Resources:
   SynthEasyStateMachine:
@@ -33,17 +35,39 @@ Resources:
               "Type": "Task",
               "Resource": "${ExtractTextLambdaArn}",
               "Next": "GenerateAudio"
+              "Catch": [
+                {
+                  "ErrorEquals": [ "States.All" ],
+                  "Next": "ErrorHandler"
+                  "ResultPath": "$.error"
+                }]
             },
             "GenerateAudio": {
               "Type": "Task",
               "Resource": "${GenerateAudioLambdaArn}",
-              "Next": "NotifySuccess"
+              "Next": "NotifySuccess",
+              "Catch": [
+              {
+                "ErrorEquals": [ "States.All" ],
+                "Next": "ErrorHandler"
+                "ResultPath": "$.error"
+              }]
             },
             "NotifySuccess": {
               "Type": "Task",
               "Resource": "${NotifySuccessLambdaArn}",
               "Next": "Success"
+              "Catch": [
+              {
+                "ErrorEquals": [ "States.All" ],
+                "Next": "ErrorHandler"
+                "ResultPath": "$.error"
+              }]
             },
+            "ErrorHandler": {
+              Type: "Task",
+              "Resource": "${HandleErrorLambdaArn}"
+            }
             "Success": {
               "Type": "Succeed"
             }

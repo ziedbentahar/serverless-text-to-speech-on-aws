@@ -14,6 +14,8 @@ Parameters:
     Type: String
   NotifySuccessLambdaZipFile:
     Type: String
+  HandleErrorLambdaZipFile:
+    Type: String
   Environment:
     Type: String
     AllowedValues:
@@ -22,7 +24,6 @@ Parameters:
       - prod
 
 Resources:
-
   WebSocketApiGateway:
     Type: AWS::CloudFormation::Stack
     Properties: 
@@ -70,6 +71,20 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref NotifySuccessLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
+        ApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.ApiGatewayEndpoint
+        WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
+
+  HandleErrorLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/handle-error-lambda.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        LambdaName: notify-success
+        LambdaHandler: index.handler
+        LambdaBucketName: !Ref DeploymentBucketName
+        LambdaZipFile: !Ref HandleErrorLambdaZipFile
         ApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.ApiGatewayEndpoint
         WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
