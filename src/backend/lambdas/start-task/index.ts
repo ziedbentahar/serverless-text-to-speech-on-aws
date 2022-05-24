@@ -12,9 +12,12 @@ export const handler = async (
     body,
   } = event;
 
-  const { articleUrl } = JSON.parse(body!) as { articleUrl: string };
+  const { articleUrl } = JSON.parse(body!) as {
+    action: string;
+    articleUrl: string;
+  };
 
-  console.log(JSON.stringify(body));
+  console.log(JSON.stringify(articleUrl));
 
   var params = {
     stateMachineArn: process.env.STATE_MACHINE_ARN!,

@@ -14,7 +14,8 @@ Parameters:
     Type: String
   GenerateAudioLambdaArn:
     Type: String
-
+  NotifySuccessLambdaArn:
+    Type: String
 
 Resources:
   SynthEasyStateMachine:
@@ -34,6 +35,11 @@ Resources:
               "Next": "GenerateAudio"
             },
             "GenerateAudio": {
+              "Type": "Task",
+              "Resource": "${GenerateAudioLambdaArn}",
+              "Next": "NotifySuccess"
+            },
+            "NotifySuccess": {
               "Type": "Task",
               "Resource": "${GenerateAudioLambdaArn}",
               "Next": "Success"
@@ -65,7 +71,7 @@ Resources:
             Resource:
             - !Ref ExtractTextLambdaArn
             - !Ref GenerateAudioLambdaArn
-
+            - !Ref NotifySuccessLambdaArn
 
 Outputs:
   StateMachineArn:

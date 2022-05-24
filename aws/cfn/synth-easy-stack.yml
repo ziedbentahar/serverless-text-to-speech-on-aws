@@ -46,6 +46,18 @@ Resources:
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
 
+  NotifySuccessLambda:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/notify-success-lambda.yml
+      Parameters:
+        Application: synth-easy
+        Environment: !Ref Environment
+        LambdaName: notify-success
+        LambdaHandler: index.handler
+        LambdaBucketName: !Ref DeploymentBucketName
+        LambdaZipFile: !Ref NotifySuccessLambdaZipFile
+        ContentRepoBucketName: !Ref ContentRepoBucketName
 
   StartTaskLambda:
     Type: AWS::CloudFormation::Stack
@@ -69,6 +81,7 @@ Resources:
         Environment: !Ref Environment
         ExtractTextLambdaArn: !GetAtt TextExctractorLambda.Outputs.LambdaFunctionArn
         GenerateAudioLambdaArn: !GetAtt GenerateAudioLambda.Outputs.LambdaFunctionArn
+        NotifySuccessLambdaArn: !GetAtt NotifySuccessLambda.Outputs.LambdaFunctionArn
 
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
