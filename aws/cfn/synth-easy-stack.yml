@@ -81,7 +81,7 @@ Resources:
       Parameters:
         Application: synth-easy
         Environment: !Ref Environment
-        LambdaName: notify-success
+        LambdaName: handle-error
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref HandleErrorLambdaZipFile
