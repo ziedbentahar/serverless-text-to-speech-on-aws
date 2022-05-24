@@ -7,6 +7,7 @@ module.exports = {
     ["audio-generator"]: "./lambdas/audio-generator/index.ts",
     ["text-extractor"]: "./lambdas/text-extractor/index.ts",
     ["start-task"]: "./lambdas/start-task/index.ts",
+    ["notify-success"]: "./lambdas/notify-success/index.ts",
   },
   target: "node",
   output: {
