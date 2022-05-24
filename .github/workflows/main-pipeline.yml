@@ -14,6 +14,7 @@ env:
   DOMAIN_NAME: synth-easy.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
   AUDIO_GENERATOR_COMPONENT_NAME: audio-generator
+  NOTIFY_SUCCESS_COMPONENT_NAME: notify-success
   START_TASK_COMPONENT_NAME: start-task
   CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
 
@@ -56,6 +57,11 @@ jobs:
         cd dist/${{ env.START_TASK_COMPONENT_NAME }}
         zip -r ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
+    - name: Zip notify-success artifact
+      run: |
+        cd dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+        zip -r ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
     - name: Upload text-extractor build artifact
       uses: actions/upload-artifact@v3
       with:
@@ -73,6 +79,12 @@ jobs:
       with:
         name: ${{ env.START_TASK_COMPONENT_NAME }}
         path: src/backend/dist/${{ env.START_TASK_COMPONENT_NAME }}/${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip
+
+    - name: Upload notify success build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+        path: src/backend/dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip
 
 
   create-or-update-deployment-bucket:
@@ -116,6 +128,10 @@ jobs:
       with:
         name: ${{ env.START_TASK_COMPONENT_NAME }}
    
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+   
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -128,6 +144,7 @@ jobs:
         aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
         aws s3 cp ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
         aws s3 cp ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
+        aws s3 cp ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
 
 
   deploy:
@@ -154,6 +171,7 @@ jobs:
             TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             AudioGeneratorLambdaZipFile=${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             StartTaskLambdaZipFile=${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip \
+            NotifySuccessLambdaZipFile=${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip \
             ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
             --capabilities CAPABILITY_IAM
         if [[$? -ne 0]];
