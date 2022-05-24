@@ -38,7 +38,7 @@ Resources:
               "Catch": [
                 {
                   "ErrorEquals": [ "States.All" ],
-                  "Next": "ErrorHandler"
+                  "Next": "ErrorHandler",
                   "ResultPath": "$.error"
                 }]
             },
@@ -49,7 +49,7 @@ Resources:
               "Catch": [
               {
                 "ErrorEquals": [ "States.All" ],
-                "Next": "ErrorHandler"
+                "Next": "ErrorHandler",
                 "ResultPath": "$.error"
               }]
             },
@@ -60,13 +60,13 @@ Resources:
               "Catch": [
               {
                 "ErrorEquals": [ "States.All" ],
-                "Next": "ErrorHandler"
+                "Next": "ErrorHandler",
                 "ResultPath": "$.error"
               }]
             },
             "ErrorHandler": {
               Type: "Task",
-              "Resource": "${HandleErrorLambdaArn}"
+              "Resource": "${HandleErrorLambdaArn}",
               "Next": "Error"
             },
             "Error": {
