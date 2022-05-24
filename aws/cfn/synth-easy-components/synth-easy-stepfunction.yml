@@ -71,7 +71,7 @@ Resources:
             },
             "Error": {
               "Type": "Fail"
-            }
+            },
             "Success": {
               "Type": "Succeed"
             }
