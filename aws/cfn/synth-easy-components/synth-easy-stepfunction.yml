@@ -34,7 +34,7 @@ Resources:
             "ExtractText": {
               "Type": "Task",
               "Resource": "${ExtractTextLambdaArn}",
-              "Next": "GenerateAudio"
+              "Next": "GenerateAudio",
               "Catch": [
                 {
                   "ErrorEquals": [ "States.All" ],
@@ -56,7 +56,7 @@ Resources:
             "NotifySuccess": {
               "Type": "Task",
               "Resource": "${NotifySuccessLambdaArn}",
-              "Next": "Success"
+              "Next": "Success",
               "Catch": [
               {
                 "ErrorEquals": [ "States.All" ],
