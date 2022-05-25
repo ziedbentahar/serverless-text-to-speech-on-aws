@@ -20,6 +20,8 @@ Parameters:
     Type: String
   ContentRepoBucketName:
     Type: String
+  WebSocketApi:
+    Type: String
 
 Resources:
   LambdaExecutionRole:
@@ -59,6 +61,13 @@ Resources:
                 Action:
                   - polly:SynthesizeSpeech
                 Resource: "*"
+        - PolicyName: ws-api-gateway
+          PolicyDocument: 
+            Statement:
+              - Effect: Allow
+                Action:
+                - 'execute-api:ManageConnections'
+                Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -83,6 +92,7 @@ Resources:
       Environment:
         Variables:
           CONTENT_REPO_BUCKET_NAME: !Ref ContentRepoBucketName
+          NOTIFICATION_ENDPOINT: !Ref ApiGatewayEndpoint
 
 Outputs:
   LambdaFunctionArn:

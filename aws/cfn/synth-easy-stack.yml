@@ -45,6 +45,7 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref TextExtractorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
+        WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
   GenerateAudioLambda:
     Type: AWS::CloudFormation::Stack
@@ -58,6 +59,7 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
+        WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
   NotifySuccessLambda:
     Type: AWS::CloudFormation::Stack

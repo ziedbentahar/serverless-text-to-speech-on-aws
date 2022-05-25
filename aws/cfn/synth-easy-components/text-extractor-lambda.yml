@@ -20,6 +20,8 @@ Parameters:
     Type: String
   ContentRepoBucketName:
     Type: String
+  WebSocketApi:
+    Type: String
 
 Resources:
   LambdaExecutionRole:
@@ -52,6 +54,13 @@ Resources:
                   - s3:PutObject
                   - s3:GetObject
                 Resource: !Sub arn:aws:s3:::${ContentRepoBucketName}/*
+        - PolicyName: ws-api-gateway
+          PolicyDocument: 
+            Statement:
+              - Effect: Allow
+                Action:
+                - 'execute-api:ManageConnections'
+                Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
 
   LambdaLogGroup:
     Type: AWS::Logs::LogGroup
@@ -76,6 +85,7 @@ Resources:
       Environment:
         Variables:
           CONTENT_REPO_BUCKET_NAME: !Ref ContentRepoBucketName
+          NOTIFICATION_ENDPOINT: !Ref ApiGatewayEndpoint
 
 Outputs:
   LambdaFunctionArn:
