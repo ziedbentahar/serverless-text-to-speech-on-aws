@@ -15,8 +15,10 @@ export const handler = async (
   const articleContent = await extractContentFromArticleUrl(articleUrl);
 
   if (articleContent) {
-    const key = await saveArticleContent(articleUrl, articleContent);
-    const articleContentUrl = await getPublicyAccessibleArticleContent(key);
+    await saveArticleContent(articleUrl, articleContent);
+    const articleContentUrl = await getPublicyAccessibleArticleContent(
+      articleUrl
+    );
 
     await postNotificationToConnection(connectionId, {
       type: "contentExtracted",
