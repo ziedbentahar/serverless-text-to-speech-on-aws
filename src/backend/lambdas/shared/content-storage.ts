@@ -53,7 +53,7 @@ const getPublicyAccessibleArticleContent = async (articleUrl: string) =>
 const getPubliclyAccessibleUrl = async (key: string) =>
   await s3.getSignedUrlPromise("getObject", {
     Bucket: BucketName,
-    Key: buildArticleAudioKey(key),
+    Key: key,
   });
 
 export {
