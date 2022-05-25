@@ -20,6 +20,8 @@ Parameters:
     Type: String
   ContentRepoBucketName:
     Type: String
+  ApiGatewayEndpoint:
+    Type: String
   WebSocketApi:
     Type: String
 

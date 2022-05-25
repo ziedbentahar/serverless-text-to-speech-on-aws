@@ -45,6 +45,7 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref TextExtractorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
+        ApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.ApiGatewayEndpoint
         WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
   GenerateAudioLambda:
@@ -59,6 +60,7 @@ Resources:
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref AudioGeneratorLambdaZipFile
         ContentRepoBucketName: !Ref ContentRepoBucketName
+        ApiGatewayEndpoint: !GetAtt WebSocketApiGateway.Outputs.ApiGatewayEndpoint
         WebSocketApi: !GetAtt WebSocketApiGateway.Outputs.WebSocketApi
 
   NotifySuccessLambda:
