@@ -1,6 +1,7 @@
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 import LanguageDetect from "languagedetect";
+import fetch from "node-fetch";
 
 const languageDetector = new LanguageDetect();
 languageDetector.setLanguageType("iso2");
