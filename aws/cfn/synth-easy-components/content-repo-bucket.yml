@@ -17,6 +17,15 @@ Resources:
     Properties: 
       AccessControl: Private
       BucketName: !Ref BucketName
+      CorsConfiguration:
+        CorsRules:
+          -
+            AllowedOrigins: 
+              - "*"
+            AllowedMethods: 
+              - GET
+            AllowedHeaders: 
+              - "*"
 
 Outputs:
   ContentBucketName:
