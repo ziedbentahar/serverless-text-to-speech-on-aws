@@ -18,9 +18,38 @@ env:
   HANDLE_ERROR_COMPONENT_NAME: handle-error
   START_TASK_COMPONENT_NAME: start-task
   CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
+  FRONT_END_REPO_BUCKET_NAME: synth-easy
 
 jobs:
 
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: src/frontend
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3.1.1
+      with:
+        node-version: 14
+
+    - name: Restore dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Upload frontend build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.APPLICATION_NAME }}-frontend
+        path: src/frontnd/build
+    
   build-lambdas: 
     runs-on: ubuntu-latest
 
@@ -164,7 +193,7 @@ jobs:
         aws s3 cp ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
 
   deploy:
-    needs: [upload-artifacts-to-s3]
+    needs: [upload-artifacts-to-s3, build-frontend]
     
     runs-on: ubuntu-latest
     
