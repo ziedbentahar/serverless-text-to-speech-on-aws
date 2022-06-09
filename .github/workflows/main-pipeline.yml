@@ -157,23 +157,23 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
     
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: ${{ env.START_TASK_COMPONENT_NAME }}
    
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
    
@@ -226,9 +226,10 @@ jobs:
           aws cloudformation describe-stack-events --stack-name synth-easy
         fi
 
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: ${{ env.APPLICATION_NAME }}-frontend
+        path: ${{ env.APPLICATION_NAME }}-frontend
 
     - name: Deploy frontend
       run: |
