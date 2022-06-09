@@ -27,7 +27,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: src/frontend
+        working-directory: src/frontend/synth-easy-front
     
     steps:
     - name: Checkout
