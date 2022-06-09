@@ -33,7 +33,7 @@ Resources:
             Effect: Allow
             Principal: '*'
             Action: 's3:GetObject'
-            Resource: !Join ['', ['arn:aws:s3:::', !Ref MyBucket, /*]]
+            Resource: !Join ['', ['arn:aws:s3:::', !Ref FrontendBucket, /*]]
       
 
 Outputs:
