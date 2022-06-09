@@ -233,8 +233,6 @@ jobs:
 
     - name: Deploy frontend
       run: |
-        pwd
-        ls
-        aws s3 cp ${{ env.APPLICATION_NAME }}-frontend/* s3://${{ env.FRONT_END_BUCKET_NAME }}
+        aws s3 cp --recursive ./${{ env.APPLICATION_NAME }}-frontend/ s3://${{ env.FRONT_END_BUCKET_NAME }}
 
         
