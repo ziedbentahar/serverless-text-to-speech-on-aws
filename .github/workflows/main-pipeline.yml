@@ -18,7 +18,7 @@ env:
   HANDLE_ERROR_COMPONENT_NAME: handle-error
   START_TASK_COMPONENT_NAME: start-task
   CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
-  FRONT_END_REPO_BUCKET_NAME: synth-easy
+  FRONT_END_BUCKET_NAME: synth-easy
 
 jobs:
 
@@ -146,10 +146,10 @@ jobs:
         run: |
           aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name synth-easy-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
 
-  upload-artifacts-to-s3:
+  upload-lambda-artifacts-to-s3:
     needs: [
       build-lambdas, 
-      create-or-update-deployment-bucket
+      create-or-update-lambda-deployment-bucket
     ]
     
     runs-on: ubuntu-latest
@@ -193,7 +193,7 @@ jobs:
         aws s3 cp ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
 
   deploy:
-    needs: [upload-artifacts-to-s3, build-frontend]
+    needs: [upload-lambda-artifacts-to-s3, build-frontend]
     
     runs-on: ubuntu-latest
     
@@ -219,30 +219,19 @@ jobs:
             NotifySuccessLambdaZipFile=${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip \
             HandleErrorLambdaZipFile=${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip \
             ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
+            FrontendBucketName=${{ env.FRONT_END_BUCKET_NAME }} \
             --capabilities CAPABILITY_IAM
         if [[$? -ne 0]];
         then
           aws cloudformation describe-stack-events --stack-name synth-easy
         fi
 
+    - uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.APPLICATION_NAME }}-frontend
+
     - name: Deploy frontend
       run: |
-        aws s3 cp
-        aws cloudformation package --template-file ./aws/cfn/synth-easy-stack.yml --output-template-file synth-easy-stack.packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
-        aws cloudformation deploy --template-file synth-easy-stack.packaged.yml --stack-name synth-easy --parameter-overrides \
-            Application=${{ env.APPLICATION_NAME }} \
-            Environment=dev \
-            DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
-            TextExtractorLambdaZipFile=${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
-            AudioGeneratorLambdaZipFile=${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip \
-            StartTaskLambdaZipFile=${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip \
-            NotifySuccessLambdaZipFile=${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip \
-            HandleErrorLambdaZipFile=${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip \
-            ContentRepoBucketName=${{ env.CONTENT_REPO_BUCKET_NAME }} \
-            --capabilities CAPABILITY_IAM
-        if [[$? -ne 0]];
-        then
-          aws cloudformation describe-stack-events --stack-name synth-easy
-        fi
+        aws s3 cp ${{ env.APPLICATION_NAME }}-frontend/* s3://${{ env.FRONT_END_BUCKET_NAME }}
 
         

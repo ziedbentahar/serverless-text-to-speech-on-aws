@@ -2,6 +2,8 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: synth easy stack
 
 Parameters:
+  FrontendBucketName:
+    Type: String
   DeploymentBucketName:
     Type: String  
   ContentRepoBucketName:
@@ -123,6 +125,14 @@ Resources:
       TemplateURL: ./synth-easy-components/content-repo-bucket.yml
       Parameters:
         BucketName: !Ref ContentRepoBucketName
+        Environment: !Ref Environment
+  
+  FrontendBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+      TemplateURL: ./synth-easy-components/frontend-bucket.yml
+      Parameters:
+        BucketName: !Ref FrontendBucketName
         Environment: !Ref Environment
 
 
