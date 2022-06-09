@@ -110,7 +110,7 @@ function App() {
         <div className="bg-white w-full  rounded-2xl max-w-5xl shadow-xl article z-10">
           {progress === "idle" && (
             <div className="flex flex-col justify-center items-center h-96  font-light">
-              <img className="w-20 h-20" src="/newspaper.png" />
+              <img className="w-20 h-20" src="/newspaper.png" alt="logo" />
               <button
                 onClick={() => setOpen(!open)}
                 type="button"
