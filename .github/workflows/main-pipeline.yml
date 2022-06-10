@@ -84,7 +84,7 @@ jobs:
 
         for component in ${ComponentArray[@]}; do
           cd dist/$component
-          zip -r -${{ github.sha }}.zip  .
+          zip -r $component-${{ github.sha }}.zip  .
           cd ../..
         done
 
