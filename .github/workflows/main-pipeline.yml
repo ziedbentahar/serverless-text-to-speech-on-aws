@@ -89,67 +89,11 @@ jobs:
         done
 
 
-    # - name: Zip text-extractor artifact
-    #   run: |
-    #     cd dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-    #     zip -r ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
-
-    # - name: Zip audio-generator artifact
-    #   run: |
-    #     cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
-    #     zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
-
-    # - name: Zip start-task artifact
-    #   run: |
-    #     cd dist/${{ env.START_TASK_COMPONENT_NAME }}
-    #     zip -r ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip  .
-
-    # - name: Zip notify-success artifact
-    #   run: |
-    #     cd dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
-    #     zip -r ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip  .
-
-    # - name: Zip handle-error artifact
-    #   run: |
-    #     cd dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}
-    #     zip -r ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
-    
     - name: Upload lambda build artifact
       uses: actions/upload-artifact@v3
       with:
         name: lambdas-artifact
         path: src/backend/dist/**/*.zip
-
-    # - name: Upload text-extractor build artifact
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-    #     path: src/backend/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
-
-    # - name: Upload audio-generator build artifact
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
-    #     path: src/backend/dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
-
-    # - name: Upload start-task build artifact
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ${{ env.START_TASK_COMPONENT_NAME }}
-    #     path: src/backend/dist/${{ env.START_TASK_COMPONENT_NAME }}/${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip
-
-    # - name: Upload notify success build artifact
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
-    #     path: src/backend/dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip
-
-    # - name: Upload handle error build artifact
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
-    #     path: src/backend/dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}/${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip
-
 
   create-or-update-lambda-deployment-bucket:
       runs-on: ubuntu-latest
@@ -182,27 +126,10 @@ jobs:
 
     - uses: actions/download-artifact@v3
       with:
-        name:  lambdas-artifact
+        name: lambdas-artifact
+        path: lambdas-artifact
 
-    # - uses: actions/download-artifact@v3
-    #   with:
-    #     name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-    
-    # - uses: actions/download-artifact@v3
-    #   with:
-    #     name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
 
-    # - uses: actions/download-artifact@v3
-    #   with:
-    #     name: ${{ env.START_TASK_COMPONENT_NAME }}
-   
-    # - uses: actions/download-artifact@v3
-    #   with:
-    #     name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
-
-    # - uses: actions/download-artifact@v3
-    #   with:
-    #     name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -213,12 +140,18 @@ jobs:
 
     - name: Upload to S3
       run: |
-        ls -R
-        aws s3 cp ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
-        aws s3 cp ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
-        aws s3 cp ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
-        aws s3 cp ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
-        aws s3 cp ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
+        declare -a ComponentArray=(
+          ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} 
+          ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+          ${{ env.START_TASK_COMPONENT_NAME }}
+          ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+          ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
+        )
+
+        for component in ${ComponentArray[@]}; do
+          aws s3 cp lambdas-artifact/$component/$component-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
+        done
+
 
   deploy:
     needs: [upload-lambda-artifacts-to-s3, build-frontend]
