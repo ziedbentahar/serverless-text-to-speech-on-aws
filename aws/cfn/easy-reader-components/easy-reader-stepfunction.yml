@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Synth Easy Step function'
+Description: 'easy reader Step function'
 
 Parameters:
   Application:
@@ -20,7 +20,7 @@ Parameters:
     Type: String
 
 Resources:
-  SynthEasyStateMachine:
+  EasyReaderStateMachine:
     Type: AWS::StepFunctions::StateMachine
     Properties:
       StateMachineName: !Sub ${Application}-${Environment}
@@ -77,10 +77,10 @@ Resources:
             }
           }
         }
-      RoleArn: !GetAtt SynthEasyStateMachineRole.Arn
+      RoleArn: !GetAtt EasyReaderStateMachineRole.Arn
 
 
-  SynthEasyStateMachineRole:
+  EasyReaderStateMachineRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -104,4 +104,4 @@ Resources:
 
 Outputs:
   StateMachineArn:
-    Value: !Ref SynthEasyStateMachine
+    Value: !Ref EasyReaderStateMachine

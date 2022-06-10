@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Synth easy Api gateway websocket api
+Description: easy reader Api gateway websocket api
 
 Parameters:
   Application:

@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: Synth Easy Content Bucket
+Description: easy reader Content Bucket
 
 Parameters:
   BucketName:
@@ -32,4 +32,4 @@ Outputs:
     Description: ContentBucketName Arn
     Value: !GetAtt ContentBucket.Arn
     Export:
-      Name: !Sub ${AWS::StackName}-synth-easy-content-bucket-arn
+      Name: !Sub ${AWS::StackName}-easy-reader-content-bucket-arn

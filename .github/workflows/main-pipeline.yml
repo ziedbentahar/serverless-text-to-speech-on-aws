@@ -1,4 +1,4 @@
-name: synth-easy
+name: easy-reader
 
 on:
   push:
@@ -9,16 +9,16 @@ on:
     branches: [ main ]
 
 env:
-  APPLICATION_NAME: synth-easy
-  DEPLOYMENT_BUCKET_NAME: synth-easy-deployment-bucket
-  DOMAIN_NAME: synth-easy.inflow-it-labs.tk
+  APPLICATION_NAME: easy-reader
+  DEPLOYMENT_BUCKET_NAME: easy-reader-deployment-bucket
+  DOMAIN_NAME: easy-reader.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
   AUDIO_GENERATOR_COMPONENT_NAME: audio-generator
   NOTIFY_SUCCESS_COMPONENT_NAME: notify-success
   HANDLE_ERROR_COMPONENT_NAME: handle-error
   START_TASK_COMPONENT_NAME: start-task
-  CONTENT_REPO_BUCKET_NAME: synth-easy-content-repo
-  FRONT_END_BUCKET_NAME: synth-easy
+  CONTENT_REPO_BUCKET_NAME: easy-reader-content-repo
+  FRONT_END_BUCKET_NAME: easy-reader
 
 jobs:
 
@@ -27,7 +27,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: src/frontend/synth-easy-front
+        working-directory: src/frontend/easy-reader-front
     
     steps:
     - name: Checkout
@@ -48,7 +48,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ env.APPLICATION_NAME }}-frontend
-        path: src/frontend/synth-easy-front/build
+        path: src/frontend/easy-reader-front/build
     
   build-lambdas: 
     runs-on: ubuntu-latest
@@ -111,7 +111,7 @@ jobs:
 
       - name: Create or update deployment bucket
         run: |
-          aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name synth-easy-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
+          aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name easy-reader-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
 
   upload-lambda-artifacts-to-s3:
     needs: [
@@ -169,8 +169,8 @@ jobs:
 
     - name: Package and Deploy Infrastructure
       run: |
-        aws cloudformation package --template-file ./aws/cfn/synth-easy-stack.yml --output-template-file synth-easy-stack.packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
-        aws cloudformation deploy --template-file synth-easy-stack.packaged.yml --stack-name synth-easy --parameter-overrides \
+        aws cloudformation package --template-file ./aws/cfn/easy-reader-stack.yml --output-template-file easy-reader-stack.packaged.yml --s3-bucket ${{ env.DEPLOYMENT_BUCKET_NAME}}
+        aws cloudformation deploy --template-file easy-reader-stack.packaged.yml --stack-name easy-reader --parameter-overrides \
             Application=${{ env.APPLICATION_NAME }} \
             Environment=dev \
             DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME }} \
@@ -184,7 +184,7 @@ jobs:
             --capabilities CAPABILITY_IAM
         if [[$? -ne 0]];
         then
-          aws cloudformation describe-stack-events --stack-name synth-easy
+          aws cloudformation describe-stack-events --stack-name easy-reader
         fi
 
     - uses: actions/download-artifact@v3

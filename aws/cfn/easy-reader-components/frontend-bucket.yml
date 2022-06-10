@@ -41,4 +41,4 @@ Outputs:
     Description: FrontendBucketName Arn
     Value: !GetAtt FrontendBucket.Arn
     Export:
-      Name: !Sub ${AWS::StackName}-synth-easy-frontend-bucket-arn
+      Name: !Sub ${AWS::StackName}-easy-reader-frontend-bucket-arn

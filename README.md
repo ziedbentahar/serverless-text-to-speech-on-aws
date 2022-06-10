@@ -1,1 +1,1 @@
-# aws-synth-easy
+# aws-easy-reader

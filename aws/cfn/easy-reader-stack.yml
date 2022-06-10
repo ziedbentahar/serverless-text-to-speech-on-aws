@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: synth easy stack
+Description: easy reader stack
 
 Parameters:
   FrontendBucketName:
@@ -29,18 +29,18 @@ Resources:
   WebSocketApiGateway:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/websocket-api-gateway.yml
+      TemplateURL: ./easy-reader-components/websocket-api-gateway.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         OnStartTaskLambdaFunctionArn: !GetAtt StartTaskLambda.Outputs.LambdaFunctionArn
 
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/text-extractor-lambda.yml
+      TemplateURL: ./easy-reader-components/text-extractor-lambda.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         LambdaName: text-extractor
         LambdaHandler: index.handler
@@ -53,9 +53,9 @@ Resources:
   GenerateAudioLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/generate-audio-lambda.yml
+      TemplateURL: ./easy-reader-components/generate-audio-lambda.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         LambdaName: audio-generator
         LambdaHandler: index.handler
@@ -68,9 +68,9 @@ Resources:
   NotifySuccessLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/notify-success-lambda.yml
+      TemplateURL: ./easy-reader-components/notify-success-lambda.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         LambdaName: notify-success
         LambdaHandler: index.handler
@@ -83,9 +83,9 @@ Resources:
   HandleErrorLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/handle-error-lambda.yml
+      TemplateURL: ./easy-reader-components/handle-error-lambda.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         LambdaName: handle-error
         LambdaHandler: index.handler
@@ -97,22 +97,22 @@ Resources:
   StartTaskLambda:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/start-task-lambda.yml
+      TemplateURL: ./easy-reader-components/start-task-lambda.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         LambdaName: start-task
         LambdaHandler: index.handler
         LambdaBucketName: !Ref DeploymentBucketName
         LambdaZipFile: !Ref StartTaskLambdaZipFile
-        StateMachineArn: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:synth-easy-${Environment}
+        StateMachineArn: !Sub arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:easy-reader-${Environment}
 
-  SynthEasyStateMachine:
+  EasyReaderStateMachine:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/synth-easy-stepfunction.yml
+      TemplateURL: ./easy-reader-components/easy-reader-stepfunction.yml
       Parameters:
-        Application: synth-easy
+        Application: easy-reader
         Environment: !Ref Environment
         ExtractTextLambdaArn: !GetAtt TextExctractorLambda.Outputs.LambdaFunctionArn
         GenerateAudioLambdaArn: !GetAtt GenerateAudioLambda.Outputs.LambdaFunctionArn
@@ -122,7 +122,7 @@ Resources:
   ContentRepoBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/content-repo-bucket.yml
+      TemplateURL: ./easy-reader-components/content-repo-bucket.yml
       Parameters:
         BucketName: !Ref ContentRepoBucketName
         Environment: !Ref Environment
@@ -130,7 +130,7 @@ Resources:
   FrontendBucket:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./synth-easy-components/frontend-bucket.yml
+      TemplateURL: ./easy-reader-components/frontend-bucket.yml
       Parameters:
         BucketName: !Ref FrontendBucketName
         Environment: !Ref Environment
