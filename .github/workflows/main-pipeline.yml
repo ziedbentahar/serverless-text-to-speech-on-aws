@@ -114,35 +114,41 @@ jobs:
     #     cd dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}
     #     zip -r ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
     
-    - name: Upload text-extractor build artifact
+    - name: Upload lambda build artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-        path: src/backend/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+        name: lambdas-artifact
+        path: src/backend/dist/**/*.zip
 
-    - name: Upload audio-generator build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
-        path: src/backend/dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
+    # - name: Upload text-extractor build artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+    #     path: src/backend/dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
-    - name: Upload start-task build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.START_TASK_COMPONENT_NAME }}
-        path: src/backend/dist/${{ env.START_TASK_COMPONENT_NAME }}/${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip
+    # - name: Upload audio-generator build artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+    #     path: src/backend/dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
-    - name: Upload notify success build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
-        path: src/backend/dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip
+    # - name: Upload start-task build artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ env.START_TASK_COMPONENT_NAME }}
+    #     path: src/backend/dist/${{ env.START_TASK_COMPONENT_NAME }}/${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip
 
-    - name: Upload handle error build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
-        path: src/backend/dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}/${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip
+    # - name: Upload notify success build artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+    #     path: src/backend/dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip
+
+    # - name: Upload handle error build artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
+    #     path: src/backend/dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}/${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip
 
 
   create-or-update-lambda-deployment-bucket:
@@ -173,6 +179,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v3
+
+    - uses: actions/download-artifact@v3
+      with:
+        name:  lambdas-artifact
 
     - uses: actions/download-artifact@v3
       with:
