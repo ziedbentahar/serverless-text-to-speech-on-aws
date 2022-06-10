@@ -184,25 +184,25 @@ jobs:
       with:
         name:  lambdas-artifact
 
-    - uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+    # - uses: actions/download-artifact@v3
+    #   with:
+    #     name: ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
     
-    - uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+    # - uses: actions/download-artifact@v3
+    #   with:
+    #     name: ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
 
-    - uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.START_TASK_COMPONENT_NAME }}
+    # - uses: actions/download-artifact@v3
+    #   with:
+    #     name: ${{ env.START_TASK_COMPONENT_NAME }}
    
-    - uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+    # - uses: actions/download-artifact@v3
+    #   with:
+    #     name: ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
 
-    - uses: actions/download-artifact@v3
-      with:
-        name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
+    # - uses: actions/download-artifact@v3
+    #   with:
+    #     name: ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
    
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
