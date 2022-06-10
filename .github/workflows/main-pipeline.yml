@@ -72,30 +72,47 @@ jobs:
     - name: Build
       run: npm run bundle
 
-    - name: Zip text-extractor artifact
-      run: |
-        cd dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
-        zip -r ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+    - name: Zip lambdas
+      run:
+        declare -a ComponentArray=(
+          ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} 
+          ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+          ${{ env.START_TASK_COMPONENT_NAME }}
+          ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+          ${{ env.HANDLE_ERROR_COMPONENT_NAME }}
+        )
 
-    - name: Zip audio-generator artifact
-      run: |
-        cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
-        zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+        for component in ${ComponentArray[@]}; do
+          cd dist/$component
+          zip -r -${{ github.sha }}.zip  .
+          cd ../..
+        done
 
-    - name: Zip start-task artifact
-      run: |
-        cd dist/${{ env.START_TASK_COMPONENT_NAME }}
-        zip -r ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
-    - name: Zip notify-success artifact
-      run: |
-        cd dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
-        zip -r ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+    # - name: Zip text-extractor artifact
+    #   run: |
+    #     cd dist/${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}
+    #     zip -r ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
 
-    - name: Zip handle-error artifact
-      run: |
-        cd dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}
-        zip -r ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+    # - name: Zip audio-generator artifact
+    #   run: |
+    #     cd dist/${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
+    #     zip -r ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
+    # - name: Zip start-task artifact
+    #   run: |
+    #     cd dist/${{ env.START_TASK_COMPONENT_NAME }}
+    #     zip -r ${{ env.START_TASK_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
+    # - name: Zip notify-success artifact
+    #   run: |
+    #     cd dist/${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}
+    #     zip -r ${{ env.NOTIFY_SUCCESS_COMPONENT_NAME }}-${{ github.sha }}.zip  .
+
+    # - name: Zip handle-error artifact
+    #   run: |
+    #     cd dist/${{ env.HANDLE_ERROR_COMPONENT_NAME }}
+    #     zip -r ${{ env.HANDLE_ERROR_COMPONENT_NAME }}-${{ github.sha }}.zip  .
     
     - name: Upload text-extractor build artifact
       uses: actions/upload-artifact@v3
