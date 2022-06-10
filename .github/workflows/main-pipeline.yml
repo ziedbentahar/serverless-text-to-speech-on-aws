@@ -73,7 +73,7 @@ jobs:
       run: npm run bundle
 
     - name: Zip lambdas
-      run:
+      run: |
         declare -a ComponentArray=(
           ${{ env.TEXT_EXTRACTOR_COMPONENT_NAME }} 
           ${{ env.AUDIO_GENERATOR_COMPONENT_NAME }}
