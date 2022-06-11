@@ -94,12 +94,12 @@ Resources:
     Properties:
       HostedZoneId: !Ref HostedZoneId
       RecordSets:
-        - Name: api.example.com. # Your chosen subdomain
+        - Name: !Ref ApiDomain
           Type: A
           AliasTarget:
             HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
             DNSName: !GetAtt CustomDomain.RegionalDomainName
-        - Name: api.example.com.
+        - Name: !Ref ApiDomain
           Type: AAAA
           AliasTarget:
             HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
