@@ -94,12 +94,12 @@ Resources:
     Properties:
       HostedZoneId: !Ref HostedZoneId
       RecordSets:
-        - Name: !Ref ApiDomain
+        - Name: !Sub ${ApiDomain}.
           Type: A
           AliasTarget:
             HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
             DNSName: !GetAtt CustomDomain.RegionalDomainName
-        - Name: !Ref ApiDomain
+        - Name: !Sub ${ApiDomain}.
           Type: AAAA
           AliasTarget:
             HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
