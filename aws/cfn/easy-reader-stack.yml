@@ -18,6 +18,12 @@ Parameters:
     Type: String
   HandleErrorLambdaZipFile:
     Type: String
+  Domain:
+    Type: String
+  ApiDomain:
+    Type: String
+  HostedZoneId:
+    Type: String
   Environment:
     Type: String
     AllowedValues:
@@ -34,6 +40,10 @@ Resources:
         Application: easy-reader
         Environment: !Ref Environment
         OnStartTaskLambdaFunctionArn: !GetAtt StartTaskLambda.Outputs.LambdaFunctionArn
+        ApiDomain: !Ref ApiDomain
+        HostedZoneId: !Ref HostedZoneId
+        CertificateArn: !GetAtt Certificate.Outputs.CertificateArn
+
 
   TextExctractorLambda:
     Type: AWS::CloudFormation::Stack
@@ -135,6 +145,14 @@ Resources:
         BucketName: !Ref FrontendBucketName
         Environment: !Ref Environment
 
+
+  Certificate: 
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./easy-reader-components/certificate.yml
+      Parameters:
+        Domain: !Ref Domain
+        HostedZoneId: !Ref HostedZoneId
 
       
         

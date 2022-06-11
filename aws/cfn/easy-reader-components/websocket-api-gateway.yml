@@ -1,10 +1,17 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: easy reader Api gateway websocket api
 
+
 Parameters:
   Application:
     Type: String
   OnStartTaskLambdaFunctionArn:
+    Type: String
+  ApiDomain:
+    Type: String
+  HostedZoneId:
+    Type: String
+  CertificateArn:
     Type: String
   Environment:
     Type: String
@@ -48,7 +55,6 @@ Resources:
       Principal: apigateway.amazonaws.com
       FunctionName: !Ref OnStartTaskLambdaFunctionArn
       SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
-
   
   Deployment:
     Type: AWS::ApiGatewayV2::Deployment
@@ -56,13 +62,41 @@ Resources:
       - StartTaskRoute
     Properties:
       ApiId: !Ref WebSocketApi
+
   Stage:
     Type: AWS::ApiGatewayV2::Stage
     Properties:
       StageName: !Ref Environment
-      Description: Prod Stage
       DeploymentId: !Ref Deployment
       ApiId: !Ref WebSocketApi
+
+  WebSocketMapping:
+      Type: AWS::ApiGatewayV2::ApiMapping
+      Properties:
+        ApiId: !Ref WebSocketApi
+        DomainName: !Ref ApiDomain
+        Stage: !Ref Environment
+
+  CustomDomain:
+    Type: AWS::ApiGateway::DomainName
+    Properties: 
+      DomainName: !Ref ApiDomain
+      CertificateArn: !Ref CertificateArn
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      SecurityPolicy: TLS_1_2
+
+  Route53RecordSetGroup:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name: !Ref ApiDomain
+      Type: A
+      HostedZoneId: !Ref HostedZoneId
+      AliasTarget:
+        DNSName: !GetAtt CustomDomain.DistributionDomainName
+        EvaluateTargetHealth: false
+        HostedZoneId: !GetAtt CustomDomain.DistributionHostedZoneId
 
 Outputs:
   WebSocketApi:

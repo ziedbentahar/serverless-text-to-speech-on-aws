@@ -1,0 +1,20 @@
+Parameters:
+  Domain:
+    Type: String
+  HostedZoneId:
+    Type: String
+Resources:
+
+  AcmCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref Domain
+      DomainValidationOptions:
+        - DomainName: !Ref Domain
+          HostedZoneId: !Ref HostedZoneId
+      ValidationMethod: 'DNS'
+
+Outputs:
+  CertificateArn:
+    Description: "ACM Certificate ARN"
+    Value: !Ref AcmCertificate
