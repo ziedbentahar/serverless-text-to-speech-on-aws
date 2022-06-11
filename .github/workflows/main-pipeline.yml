@@ -11,9 +11,6 @@ on:
 env:
   APPLICATION_NAME: easy-reader
   DEPLOYMENT_BUCKET_NAME: easy-reader-deployment-bucket
-  WILDCARD_DOMAIN_NAME: *.easy-reader.inflow-it-labs.tk
-  API_DOMAIN_NAME: api.easy-reader.inflow-it-labs.tk
-  APP_DOMAIN_NAME: app.easy-reader.inflow-it-labs.tk
   TEXT_EXTRACTOR_COMPONENT_NAME: text-extractor
   AUDIO_GENERATOR_COMPONENT_NAME: audio-generator
   NOTIFY_SUCCESS_COMPONENT_NAME: notify-success
@@ -21,6 +18,9 @@ env:
   START_TASK_COMPONENT_NAME: start-task
   CONTENT_REPO_BUCKET_NAME: easy-reader-content-repo
   FRONT_END_BUCKET_NAME: easy-reader
+  WILDCARD_DOMAIN_NAME: *.easy-reader.inflow-it-labs.tk
+  API_DOMAIN_NAME: api.easy-reader.inflow-it-labs.tk
+  APP_DOMAIN_NAME: app.easy-reader.inflow-it-labs.tk
 
 jobs:
 
