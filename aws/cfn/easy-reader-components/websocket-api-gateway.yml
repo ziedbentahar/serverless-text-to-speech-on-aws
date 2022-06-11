@@ -90,15 +90,20 @@ Resources:
       SecurityPolicy: TLS_1_2
 
   Route53RecordSetGroup:
-    Type: AWS::Route53::RecordSet
+    Type: AWS::Route53::RecordSetGroup
     Properties:
-      Name: !Ref ApiDomain
-      Type: A
       HostedZoneId: !Ref HostedZoneId
-      AliasTarget:
-        DNSName: !GetAtt CustomDomain.DistributionDomainName
-        EvaluateTargetHealth: false
-        HostedZoneId: !GetAtt CustomDomain.DistributionHostedZoneId
+      RecordSets:
+        - Name: api.example.com. # Your chosen subdomain
+          Type: A
+          AliasTarget:
+            HostedZoneId: !GetAtt CustomDomain.HostedZoneId
+            DNSName: !GetAtt CustomDomain.RegionalDomainName
+        - Name: api.example.com.
+          Type: AAAA
+          AliasTarget:
+            HostedZoneId: !GetAtt CustomDomain.HostedZoneId
+            DNSName: !GetAtt CustomDomain.RegionalDomainName
 
 Outputs:
   WebSocketApi:
