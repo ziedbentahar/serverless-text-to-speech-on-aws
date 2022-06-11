@@ -70,18 +70,20 @@ Resources:
       DeploymentId: !Ref Deployment
       ApiId: !Ref WebSocketApi
 
-  WebSocketMapping:
+  WebSocketApiMapping:
       Type: AWS::ApiGatewayV2::ApiMapping
       Properties:
         ApiId: !Ref WebSocketApi
         DomainName: !Ref ApiDomain
         Stage: !Ref Environment
+      DependsOn:
+        - CustomDomain
 
   CustomDomain:
     Type: AWS::ApiGateway::DomainName
     Properties: 
       DomainName: !Ref ApiDomain
-      CertificateArn: !Ref CertificateArn
+      RegionalCertificateArn: !Ref CertificateArn
       EndpointConfiguration:
         Types:
           - REGIONAL
