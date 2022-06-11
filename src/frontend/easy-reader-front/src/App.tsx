@@ -18,9 +18,7 @@ function useSynth(articleUrl: string) {
   useEffect(() => {
     if (articleUrl === "") return;
 
-    const ws = new WebSocket(
-      "wss://u0zldddco0.execute-api.eu-west-1.amazonaws.com/dev"
-    );
+    const ws = new WebSocket("wss://api.easy-reader.inflow-it-labs.tk");
 
     ws.onopen = () => {
       setProgress("extractingContent");
