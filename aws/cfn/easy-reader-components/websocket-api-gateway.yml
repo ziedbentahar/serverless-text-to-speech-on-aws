@@ -97,12 +97,12 @@ Resources:
         - Name: api.example.com. # Your chosen subdomain
           Type: A
           AliasTarget:
-            HostedZoneId: !GetAtt CustomDomain.HostedZoneId
+            HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
             DNSName: !GetAtt CustomDomain.RegionalDomainName
         - Name: api.example.com.
           Type: AAAA
           AliasTarget:
-            HostedZoneId: !GetAtt CustomDomain.HostedZoneId
+            HostedZoneId: !GetAtt CustomDomain.RegionalHostedZoneId
             DNSName: !GetAtt CustomDomain.RegionalDomainName
 
 Outputs:
