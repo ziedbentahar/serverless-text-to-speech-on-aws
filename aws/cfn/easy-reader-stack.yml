@@ -137,10 +137,10 @@ Resources:
         BucketName: !Ref ContentRepoBucketName
         Environment: !Ref Environment
   
-  FrontendBucket:
+  FrontendBucketWithCloudFrontDistribution:
     Type: AWS::CloudFormation::Stack
     Properties: 
-      TemplateURL: ./easy-reader-components/frontend-bucket.yml
+      TemplateURL: ./easy-reader-components/frontend-bucket-with-cloudfront-distribution.yml
       Parameters:
         BucketName: !Ref FrontendBucketName
         Environment: !Ref Environment

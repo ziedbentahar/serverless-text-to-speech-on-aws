@@ -1,0 +1,83 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Front end bucket with cloudfront distribution
+
+Parameters:
+  BucketName:
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - dev
+      - stage
+      - prod
+
+Resources:
+
+  FrontendBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls : true
+        BlockPublicPolicy : true
+        IgnorePublicAcls : true
+        RestrictPublicBuckets : true
+
+  FrontEndBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: cloudfront-private-content
+            Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt OriginAccessIdentity.S3CanonicalUserId
+            Action: 's3:GetObject*'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref FrontendBucket
+                - /*
+      Bucket: !Ref FrontendBucket
+
+  CloudFrontDistribution:
+    Type: 'AWS::CloudFront::Distribution'
+    DependsOn:
+      - OriginAccessIdentity
+    Properties:
+      DistributionConfig:
+        Origins:
+        - DomainName: !GetAtt FrontendBucket.RegionalDomainName
+          Id: frontend-bucket-origin
+          S3OriginConfig:
+            OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${OriginAccessIdentity}"
+        Enabled: 'true'
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          TargetOriginId: frontend-bucket-origin
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+          OriginRequestPolicyId: 88a5eaf4-2fd4-4709-b370-b4c650ea3fcf # CORS-S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+        PriceClass: PriceClass_All
+
+  OriginAccessIdentity:
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    DependsOn:
+      - FrontendBucket
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'OriginAccessIdentity for ${BucketName}'
+
+Outputs:
+  DistributionId:
+    Description: 'CloudFront Distribution ID'
+    Value: !Ref CloudFrontDistribution
+  Domain:
+    Description: 'Cloudfront Domain'
+    Value: !GetAtt CloudFrontDistribution.DomainName
