@@ -24,34 +24,7 @@ env:
 
 jobs:
 
-  build-frontend:
-    runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: src/frontend/easy-reader-front
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-
-    - name: Setup Node
-      uses: actions/setup-node@v3.1.1
-      with:
-        node-version: 14
-
-    - name: Restore dependencies
-      run: npm install
-
-    - name: Build
-      run: npm run build
-
-    - name: Upload frontend build artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{ env.APPLICATION_NAME }}-frontend
-        path: src/frontend/easy-reader-front/build
-    
   build-lambdas: 
     runs-on: ubuntu-latest
 
@@ -115,6 +88,7 @@ jobs:
         run: |
           aws cloudformation deploy --template-file ./aws/cfn/deployment-bucket.yml --stack-name easy-reader-deployment-bucket --parameter-overrides DeploymentBucketName=${{ env.DEPLOYMENT_BUCKET_NAME}}
 
+
   upload-lambda-artifacts-to-s3:
     needs: [
       build-lambdas, 
@@ -154,6 +128,35 @@ jobs:
           aws s3 cp lambdas-artifact/$component/$component-${{ github.sha }}.zip s3://${{ env.DEPLOYMENT_BUCKET_NAME }}
         done
 
+
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: src/frontend/easy-reader-front
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3.1.1
+      with:
+        node-version: 14
+
+    - name: Restore dependencies
+      run: npm install
+
+    - name: Build
+      run: npm run build
+
+    - name: Upload frontend build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.APPLICATION_NAME }}-frontend
+        path: src/frontend/easy-reader-front/build
+    
 
   deploy:
     needs: [upload-lambda-artifacts-to-s3, build-frontend]
