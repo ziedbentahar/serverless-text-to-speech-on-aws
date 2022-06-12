@@ -78,6 +78,8 @@ Resources:
         Stage: !Ref Environment
       DependsOn:
         - CustomDomain
+        - Stage
+        - WebSocketApi
 
   CustomDomain:
     Type: AWS::ApiGateway::DomainName
