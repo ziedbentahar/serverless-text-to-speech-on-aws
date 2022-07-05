@@ -25,7 +25,7 @@ function useSynth(articleUrl: string) {
 
       ws.send(
         JSON.stringify({
-          action: "post",
+          action: "processUrl",
           articleUrl,
         })
       );

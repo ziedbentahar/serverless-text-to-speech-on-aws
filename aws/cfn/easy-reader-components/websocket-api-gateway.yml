@@ -40,7 +40,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref WebSocketApi
-      RouteKey: post
+      RouteKey: processUrl
       AuthorizationType: NONE
       OperationName: StartTask
       Target: !Join
