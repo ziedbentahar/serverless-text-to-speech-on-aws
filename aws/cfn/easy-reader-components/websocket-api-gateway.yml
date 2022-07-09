@@ -69,7 +69,6 @@ Resources:
       StageName: !Ref Environment
       DeploymentId: !Ref Deployment
       ApiId: !Ref WebSocketApi
-      AutoDeploy: true
 
   WebSocketApiMapping:
       Type: AWS::ApiGatewayV2::ApiMapping
